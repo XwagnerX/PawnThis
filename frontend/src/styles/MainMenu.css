@@ -1,0 +1,86 @@
+.main-menu {
+  width: 100vw;
+  height: 100vh;
+  background-image: url('../assets/images/Intro.jpg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: 35% center;
+  background-color: #000;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding-bottom: 120px;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.menu-content {
+  padding: 1rem;
+  border-radius: 10px;
+  text-align: center;
+  width: 80%;
+  max-width: 270px;
+}
+
+.menu-content h1 {
+  color: white;
+  font-size: 3rem;
+  margin-bottom: 2rem;
+}
+
+.menu-buttons {
+  color: black;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.menu-button {
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  background-color: #FEFFD4;
+  color: #3F1518;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.menu-button:hover {
+  border: 2px solid #FEFFD4;
+  color: #FEFFD4;
+  background-color: #3F1518;
+}
+
+.auth-icons {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 1rem;
+  margin-right: 130px;
+}
+
+.auth-icon-button {
+  background-color: #3F1518;
+  border: 1px solid #FEFFD4;
+  color: #FEFFD4;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s;
+}
+
+.auth-icon-button:hover {
+  background-color: #FEFFD4;
+  color: #3F1518;
+}
+
+.auth-icon-button i {
+  font-size: 1.2rem;
+} 

@@ -1,0 +1,113 @@
+.auth-container {
+  width: 100vw;
+  height: 100vh;
+  background-image: url('../assets/images/FondoRegistroInicio.jpg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: 35% center;
+  background-color: #000;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding-bottom: 120px;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.auth-content {
+  padding: 2rem;
+  border-radius: 10px;
+  margin-bottom: 60px;
+  width: 90%;
+  max-width: 400px;
+}
+
+.auth-content h2 {
+  color: #FEFFD4;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 5px;
+  background-color: #FEFFD4;
+  color: #3F1518;
+  font-size: 1rem;
+}
+
+.form-group input::placeholder {
+  color: #3F1518;
+  opacity: 0.7;
+}
+
+.auth-button {
+  width: 100%;
+  padding: 1rem;
+  background-color: #FEFFD4;
+  color: #3F1518;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 1rem;
+}
+
+.auth-button:hover {
+  background-color: #3F1518;
+  color: #FEFFD4;
+}
+
+.auth-link {
+  margin-top: 1rem;
+  text-align: center;
+  color: #FEFFD4;
+}
+
+.auth-link span {
+  color: #FEFFD4;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.auth-link span:hover {
+  color: #3F1518;
+  background-color: #FEFFD4;
+  border-radius: 3px;
+}
+
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border: 1px solid #FEFFD4;
+  color: #FEFFD4;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s;
+  font-size: 1rem;
+}
+
+.back-button:hover {
+  background-color: #FEFFD4;
+  color: #3F1518;
+}
+
+.back-button i {
+  font-size: 1.2rem;
+} 
