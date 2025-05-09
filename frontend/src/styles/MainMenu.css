@@ -22,6 +22,7 @@
   text-align: center;
   width: 80%;
   max-width: 270px;
+  margin-right: 80px;
 }
 
 .menu-content h1 {
@@ -83,4 +84,22 @@
 
 .auth-icon-button i {
   font-size: 1.2rem;
+}
+
+.profile-bg {
+  width: 100vw;
+  height: 100vh;
+  background-image: url('../assets/images/Intro.jpg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: 35% center;
+  background-color: #000;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding-bottom: 120px;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
 } 

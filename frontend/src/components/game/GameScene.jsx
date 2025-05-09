@@ -45,9 +45,12 @@ const GameScene = () => {
               <i className="fas fa-shopping-cart"></i>
               <span>Comprar</span>
             </button>
-            <button className="control-button">
+            <button
+              className="control-button"
+              onClick={() => navigate('/')}
+            >
               <i className="fas fa-cog"></i>
-              <span>Ajustes</span>
+              <span>Menú</span>
             </button>
           </div>
         </div>
