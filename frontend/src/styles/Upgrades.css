@@ -1,0 +1,154 @@
+.upgrades-scene {
+  width: 100vw;
+  height: 100vh;
+  background-image: url('../assets/images/FondoMesa2.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: 0% center;
+  background-color: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.upgrades-content {
+  background-color: rgba(65, 32, 8, 0.95);
+  width: 90%;
+  max-width: 800px;
+  height: 90vh;
+  padding: 2rem;
+  color: #FEFFD4;
+  overflow-y: auto;
+  border-radius: 15px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.upgrades-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.upgrades-header h2 {
+  font-size: 2.5rem;
+  color: #FEFFD4;
+}
+
+.back-button {
+  background-color: rgba(254, 255, 212, 0.3);
+  color: #FEFFD4;
+  border: 1px solid #FEFFD4;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s;
+}
+
+.back-button:hover {
+  background-color: rgba(65, 32, 8, 0.7);
+  border: 2px solid #FEFFD4;
+}
+
+.upgrades-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.upgrade-section h3 {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  color: #FEFFD4;
+  border-bottom: 2px solid #FEFFD4;
+  padding-bottom: 0.5rem;
+}
+
+.upgrades-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.upgrade-card {
+  background-color: rgba(254, 255, 212, 0.1);
+  padding: 1.5rem;
+  border-radius: 10px;
+  border: 1px solid rgba(254, 255, 212, 0.3);
+}
+
+.upgrade-card h4 {
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+  color: #FEFFD4;
+}
+
+.upgrade-card p {
+  color: #FEFFD4;
+  opacity: 0.8;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+
+.upgrade-levels {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.upgrade-button {
+  background-color: rgba(254, 255, 212, 0.2);
+  border: 1px solid #FEFFD4;
+  color: #FEFFD4;
+  padding: 0.8rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.upgrade-button:hover {
+  background-color: rgba(254, 255, 212, 0.3);
+  transform: translateY(-2px);
+}
+
+.upgrade-button .level {
+  font-weight: bold;
+}
+
+.upgrade-button .cost {
+  color: #FEFFD4;
+  font-weight: bold;
+}
+
+.upgrade-button .effect {
+  color: #FEFFD4;
+  opacity: 0.8;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .upgrades-content {
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .upgrades-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .upgrade-button {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+} 

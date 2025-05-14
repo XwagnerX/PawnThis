@@ -63,19 +63,23 @@
   justify-content: center;
   align-items: center;
   padding: 2rem;
+  gap: 2rem;
 }
 
 .shop-action {
-  background-color: rgba(254, 255, 212, 0.3);
+  background-color: rgba(254, 255, 212, 0.286);
   color: #3F1518;
   border: none;
-  margin-right: 80px;
+  margin-right: 0;
   margin-bottom: 35px;
-  padding: 12.5rem 14.5rem;
+  padding: 12.5rem 14rem;
   border-radius: 5px;
   font-size: 1.2rem;
   cursor: pointer;
   transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
 }
 
 .shop-action:hover {
@@ -84,24 +88,22 @@
   color: #FEFFD4;
 }
 
-.shop-inventory {
-  flex: 1;
-  border-radius: 10px;
-  padding: 1rem;
+.inventory-action {
+  background-color: rgba(254, 255, 212, 0.286);
+  color: #3F1518;
+  border-radius: 5px;
+  padding: 12.5rem 19rem;
+  font-size: 1.2rem;
+  margin-left: 65px;
+  margin-bottom: 35px;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.inventory-action:hover {
+  background-color: rgba(65, 32, 8, 0.7);
+  border: 2px solid #FEFFD4;
   color: #FEFFD4;
-}
-
-.shop-inventory h3 {
-  font-size: 1.75rem;
-  margin-top: 5px;
-  margin-right: 80px;
-}
-
-.inventory-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 1rem;
-  padding: 1rem;
 }
 
 .shop-controls {
@@ -133,4 +135,16 @@
 
 .control-button i {
   font-size: 1.2rem;
+}
+
+@media (max-width: 900px) {
+  .shop-counter {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  .shop-action, .inventory-action {
+    padding: 3rem 2rem;
+    font-size: 1rem;
+  }
 } 

@@ -13,9 +13,6 @@ const GameScene = () => {
             <span className="player-name">Jugador</span>
             <span className="player-money">$1000</span>
           </div>
-          <div className="game-date">
-            <span>Día 1</span>
-          </div>
         </div>
 
         <div className="game-main">
@@ -27,23 +24,23 @@ const GameScene = () => {
               >
                 Atender Cliente
               </button>
-            </div>
-            <div className="shop-inventory">
-              <h3>Inventario</h3>
-              <div className="inventory-grid">
-                {/* Los items se cargarán aquí */}
-              </div>
+              <button 
+                className="inventory-action"
+                onClick={() => navigate('/game/inventory')}
+              >
+                <i className="fas fa-box-open"></i> Inventario
+              </button>
             </div>
           </div>
 
           <div className="shop-controls">
-            <button className="control-button">
-              <i className="fas fa-clock"></i>
-              <span>Pasar Día</span>
+            <button className="control-button" onClick={() => navigate('/game/upgrades')}>
+              <i className="fas fa-tools"></i>
+              <span>Mejoras</span>
             </button>
-            <button className="control-button">
-              <i className="fas fa-shopping-cart"></i>
-              <span>Comprar</span>
+            <button className="control-button" onClick={() => navigate('/game/shop')}>
+              <i className="fas fa-store"></i>
+              <span>Tienda</span>
             </button>
             <button className="control-button">
               <i className="fas fa-cog"></i>

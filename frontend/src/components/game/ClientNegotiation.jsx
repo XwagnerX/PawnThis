@@ -3,6 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import '../../styles/ClientNegotiation.css';
 import fondo1 from '../../assets/imagesfondo/TungSahur1.png';
 import fondo2 from '../../assets/imagesfondo/TungSahur2.png';
+import fondo3 from '../../assets/imagesfondo/TungSahur3.png';
+import ficha1 from '../../assets/images/Ficha1.png';
+import ficha5 from '../../assets/images/Ficha5.png';
+import ficha20 from '../../assets/images/Ficha20.png';
+import ficha100 from '../../assets/images/Ficha100.png';
 
 const ClientNegotiation = () => {
   const navigate = useNavigate();
@@ -12,7 +17,7 @@ const ClientNegotiation = () => {
 
   useEffect(() => {
     const scene = document.querySelector('.negotiation-scene');
-    const fondos = [fondo1, fondo2];
+    const fondos = [fondo1, fondo2, fondo3];
     const fondoAleatorio = fondos[Math.floor(Math.random() * fondos.length)];
     scene.style.backgroundImage = `url(${fondoAleatorio})`;
   }, []);
@@ -48,46 +53,27 @@ const ClientNegotiation = () => {
         </div>
 
         <div className="negotiation-controls">
-          <div className="price-controls">
-            <button 
-              className="price-button"
-              onClick={() => handlePriceChange(-10)}
-            >
-              -10
-            </button>
-            <button 
-              className="price-button"
-              onClick={() => handlePriceChange(-5)}
-            >
-              -5
-            </button>
+          <div className="price-chips-row">
+            <div className="chips-group chips-group-left">
+              <div className="chips-symbol chips-symbol-left">−</div>
+              <div className="chips-group-row">
+                <img src={ficha100} alt="-100" className="chip-img" onClick={() => handlePriceChange(-100)} />
+                <img src={ficha20} alt="-20" className="chip-img" onClick={() => handlePriceChange(-20)} />
+                <img src={ficha5} alt="-5" className="chip-img" onClick={() => handlePriceChange(-5)} />
+                <img src={ficha1} alt="-1" className="chip-img" onClick={() => handlePriceChange(-1)} />
+              </div>
+            </div>
             <span className="current-price">${price}</span>
-            <button 
-              className="price-button"
-              onClick={() => handlePriceChange(5)}
-            >
-              +5
-            </button>
-            <button 
-              className="price-button"
-              onClick={() => handlePriceChange(10)}
-            >
-              +10
-            </button>
+            <div className="chips-group chips-group-right">
+              <div className="chips-symbol chips-symbol-right">+</div>
+              <div className="chips-group-row">
+                <img src={ficha1} alt="+1" className="chip-img" onClick={() => handlePriceChange(1)} />
+                <img src={ficha5} alt="+5" className="chip-img" onClick={() => handlePriceChange(5)} />
+                <img src={ficha20} alt="+20" className="chip-img" onClick={() => handlePriceChange(20)} />
+                <img src={ficha100} alt="+100" className="chip-img" onClick={() => handlePriceChange(100)} />
+              </div>
+            </div>
           </div>
-
-          <form onSubmit={handleCustomPrice} className="custom-price-form">
-            <input
-              type="number"
-              value={customPrice}
-              onChange={(e) => setCustomPrice(e.target.value)}
-              placeholder="Precio personalizado"
-              min="0"
-            />
-            <button type="submit" className="custom-price-button">
-              Establecer Precio
-            </button>
-          </form>
 
           <button 
             className="offer-button"

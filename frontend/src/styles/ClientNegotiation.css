@@ -113,8 +113,63 @@
   border: 2px solid #FEFFD4;
 }
 
+.price-chips-row {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  margin-bottom: 2rem;
+}
+
+.chips-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chips-symbol {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.2rem;
+  line-height: 1;
+  text-align: center;
+  text-shadow: 0 1px 2px #3F1518;
+  user-select: none;
+}
+
+.chips-symbol-left {
+  color: #ff6b6b;
+}
+
+.chips-symbol-right {
+  color: #4caf50;
+}
+
+.chips-group-row {
+  display: flex;
+  flex-direction: row;
+  gap: 0.3rem;
+}
+
+.chip-img {
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  background: rgba(254,255,212,0.08);
+}
+
+.chip-img:hover {
+  transform: scale(1.13) rotate(-7deg);
+  box-shadow: 0 2px 12px rgba(254,255,212,0.18);
+  border: 2px solid #ffe082;
+  background: rgba(254,255,212,0.18);
+}
+
 .current-price {
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: bold;
   color: #FEFFD4;
   min-width: 100px;
@@ -223,4 +278,24 @@
   color: #fff;
   border: 2px solid #bdbdbd;
   cursor: not-allowed;
+}
+
+.chips-label {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #ffe082;
+  margin-top: 0.2rem;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+  text-shadow: 0 1px 2px #3F1518;
+}
+
+.chips-label-left {
+  /* Opcional: color más rojizo */
+  color: #ffb3b3;
+}
+
+.chips-label-right {
+  /* Opcional: color más verdoso */
+  color: #b3ffb3;
 } 
