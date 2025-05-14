@@ -1,27 +1,23 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import '../styles/Auth.css';
 
 const Register = () => {
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
-  });
+  const [form, setForm] = useState({ nombre: '', apellido: '', email: '', password: '' });
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
+  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    // Aquí irá la lógica de registro
-    console.log('Register attempt:', formData);
+    try {
+      await axios.post('http://localhost:5000/api/auth/register', form);
+      navigate('/'); // Redirige al menú principal
+    } catch (err) {
+      setError(err.response?.data?.message || 'Error al registrar');
+    }
   };
 
   return (
@@ -39,9 +35,19 @@ const Register = () => {
           <div className="form-group">
             <input
               type="text"
-              name="username"
-              placeholder="Nombre de usuario"
-              value={formData.username}
+              name="nombre"
+              placeholder="Nombre"
+              value={form.nombre}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <input
+              type="text"
+              name="apellido"
+              placeholder="Apellido"
+              value={form.apellido}
               onChange={handleChange}
               required
             />
@@ -51,7 +57,7 @@ const Register = () => {
               type="email"
               name="email"
               placeholder="Email"
-              value={formData.email}
+              value={form.email}
               onChange={handleChange}
               required
             />
@@ -61,22 +67,13 @@ const Register = () => {
               type="password"
               name="password"
               placeholder="Contraseña"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <input
-              type="password"
-              name="confirmPassword"
-              placeholder="Confirmar contraseña"
-              value={formData.confirmPassword}
+              value={form.password}
               onChange={handleChange}
               required
             />
           </div>
           <button type="submit" className="auth-button">Registrarse</button>
+          {error && <p style={{color: 'red'}}>{error}</p>}
         </form>
         <p className="auth-link">
           ¿Ya tienes cuenta? 

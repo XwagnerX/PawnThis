@@ -1,25 +1,26 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import '../styles/Auth.css';
 
 const Login = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
+  const [form, setForm] = useState({ email: '', password: '' });
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
+  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    // Aquí irá la lógica de inicio de sesión
-    console.log('Login attempt:', formData);
+    try {
+      const response = await axios.post('http://localhost:5000/api/auth/login', form);
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      localStorage.setItem('loginTime', Date.now());
+      navigate('/'); // Esto redirige al menú principal
+    } catch (err) {
+      setError(err.response?.data?.message || 'Error al iniciar sesión');
+    }
   };
 
   return (
@@ -39,7 +40,7 @@ const Login = () => {
               type="email"
               name="email"
               placeholder="Email"
-              value={formData.email}
+              value={form.email}
               onChange={handleChange}
               required
             />
@@ -49,12 +50,13 @@ const Login = () => {
               type="password"
               name="password"
               placeholder="Contraseña"
-              value={formData.password}
+              value={form.password}
               onChange={handleChange}
               required
             />
           </div>
           <button type="submit" className="auth-button">Iniciar Sesión</button>
+          {error && <p style={{ color: 'red' }}>{error}</p>}
         </form>
         <p className="auth-link">
           ¿No tienes cuenta? 
