@@ -12,22 +12,6 @@
   position: fixed;
   top: 0;
   left: 0;
-  animation: changeBackground 0.1s;
-}
-
-@keyframes changeBackground {
-  0% {
-    background-image: url('../assets/imagesfondo/TungSahur2.png');
-  }
-  33% {
-    background-image: url('../assets/imagesfondo/TungSahur2.png');
-  }
-  66% {
-    background-image: url('../assets/imagesfondo/TungSahur2.png');
-  }
-  100% {
-    background-image: url('../assets/imagesfondo/TungSahur2.png');
-  }
 }
 
 .negotiation-content {

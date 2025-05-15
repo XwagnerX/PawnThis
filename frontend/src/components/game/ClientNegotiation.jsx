@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/ClientNegotiation.css';
 import fondo1 from '../../assets/imagesfondo/TungSahur1.png';
@@ -14,13 +14,8 @@ const ClientNegotiation = () => {
   const [price, setPrice] = useState(100);
   const [customPrice, setCustomPrice] = useState('');
   const [offerSent, setOfferSent] = useState(false);
-
-  useEffect(() => {
-    const scene = document.querySelector('.negotiation-scene');
-    const fondos = [fondo1, fondo2, fondo3];
-    const fondoAleatorio = fondos[Math.floor(Math.random() * fondos.length)];
-    scene.style.backgroundImage = `url(${fondoAleatorio})`;
-  }, []);
+  const fondos = [fondo1, fondo2, fondo3];
+  const [fondoAleatorio] = useState(fondos[Math.floor(Math.random() * fondos.length)]);
 
   const handlePriceChange = (amount) => {
     setPrice(prevPrice => Math.max(0, prevPrice + amount));
@@ -41,7 +36,7 @@ const ClientNegotiation = () => {
   };
 
   return (
-    <div className="negotiation-scene">
+    <div className="negotiation-scene" style={{ backgroundImage: `url(${fondoAleatorio})` }}>
       <div className="negotiation-content">
         <div className="client-info">
           <h2>Cliente</h2>
