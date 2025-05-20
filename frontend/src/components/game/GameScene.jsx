@@ -11,6 +11,12 @@ const GameScene = () => {
     loadGameState();
   }, []);
 
+  useEffect(() => {
+    if (gameState && gameState._id) {
+      localStorage.setItem('gameId', gameState._id);
+    }
+  }, [gameState]);
+
   const loadGameState = async () => {
     try {
       const response = await axios.get('/api/game/state');
@@ -21,20 +27,56 @@ const GameScene = () => {
     }
   };
 
-  const saveGameState = async (newState) => {
+  const handleSaveGame = async () => {
     try {
-      await axios.put('/api/game/update', newState);
-      loadGameState();
+      if (!gameState || !gameState._id) {
+        console.error('No hay estado del juego para guardar');
+        return;
+      }
+
+      const response = await axios.put(`/api/game/${gameState._id}`, {
+        ...gameState,
+        lastPlayed: new Date()
+      });
+
+      if (response.status === 200) {
+        console.log('Juego guardado exitosamente');
+        // Opcional: mostrar un mensaje de éxito
+      }
     } catch (error) {
       console.error('Error al guardar el estado del juego:', error);
+      // Opcional: mostrar un mensaje de error al usuario
     }
   };
 
-  const handleAddMoney = () => {
+  const handleAddMoney = async () => {
     if (gameState) {
-      const updatedState = { ...gameState, money: (gameState.money || 0) + 100 };
-      setGameState(updatedState);
-      saveGameState({ money: updatedState.money });
+      try {
+        const updatedState = { ...gameState, money: (gameState.money || 0) + 100 };
+        setGameState(updatedState);
+        
+        // Esperar a que se complete el guardado
+        const response = await axios.put(`/api/game/${gameState._id}`, {
+          ...updatedState,
+          lastPlayed: new Date()
+        });
+
+        if (response.status === 200) {
+          console.log('Juego guardado exitosamente con el nuevo dinero');
+        }
+      } catch (error) {
+        console.error('Error al guardar el estado del juego:', error);
+        // Revertir el estado si hay error
+        setGameState(gameState);
+      }
+    }
+  };
+
+  const handleNegotiation = () => {
+    if (gameState && gameState._id) {
+      navigate(`/game/negotiation/${gameState._id}`);
+    } else {
+      console.error('No hay ID de juego disponible');
     }
   };
 
@@ -53,7 +95,7 @@ const GameScene = () => {
             <div className="shop-counter">
               <button 
                 className="shop-action"
-                onClick={() => navigate('/game/negotiation')}
+                onClick={handleNegotiation}
               >
                 Atender Cliente
               </button>

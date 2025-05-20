@@ -1,39 +1,49 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import axios from '../../config/axios';
 import '../../styles/Inventory.css';
 
-const inventoryItems = [
-  {
-    id: 1,
-    name: 'Reloj Antiguo',
-    description: 'Reloj de bolsillo de la década de 1920',
-    image: 'reloj.png',
-    level: 1
-  },
-  {
-    id: 2,
-    name: 'Jarrón Chino',
-    description: 'Jarrón de porcelana de la dinastía Ming',
-    image: 'jarrón.png',
-    level: 2
-  },
-  {
-    id: 3,
-    name: 'Cámara Vintage',
-    description: 'Cámara fotográfica de los años 50',
-    image: 'camara.png',
-    level: 1
-  }
-];
-
 const TOTAL_SLOTS = 10;
-const filledSlots = [...inventoryItems];
-while (filledSlots.length < TOTAL_SLOTS) {
-  filledSlots.push(null);
-}
 
 const Inventory = () => {
   const navigate = useNavigate();
+  const params = useParams();
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  // Obtener gameId de la URL o del localStorage
+  const gameId = params.gameId || localStorage.getItem('gameId');
+  console.log('gameId usado en Inventory:', gameId);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        // Obtener el token del localStorage
+        const token = localStorage.getItem('token');
+        if (!gameId) {
+          setError('No se encontró la partida');
+          setLoading(false);
+          return;
+        }
+        const response = await axios.get(`/api/items/game/${gameId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setItems(response.data);
+      } catch (err) {
+        setError('Error al cargar el inventario');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchItems();
+  }, [gameId]);
+
+  // Rellenar los slots vacíos
+  const filledSlots = [...items];
+  while (filledSlots.length < TOTAL_SLOTS) {
+    filledSlots.push(null);
+  }
 
   return (
     <div className="inventory-scene">
@@ -45,32 +55,32 @@ const Inventory = () => {
             <span>Volver</span>
           </button>
         </div>
-        <div className="inventory-grid">
-          {filledSlots.map((item, idx) => (
-            item ? (
-              <div key={item.id} className="inventory-card">
-                <div className="inventory-image">
-                  <img src={`/src/assets/images/${item.image}`} alt={item.name} />
-                </div>
-                <div className="inventory-info">
-                  <h3>{item.name}</h3>
-                  <p className="inventory-description">{item.description}</p>
-                  <div className="inventory-level">Nivel: {item.level}</div>
-                  <div className="inventory-actions">
-                    <button className="inventory-btn improve">
-                      <i className="fas fa-arrow-up"></i>
-                    </button>
-                    <button className="inventory-btn details">
-                      <i className="fas fa-search"></i>
-                    </button>
+        {loading ? (
+          <div style={{ color: '#FEFFD4', textAlign: 'center' }}>Cargando inventario...</div>
+        ) : error ? (
+          <div style={{ color: 'red', textAlign: 'center' }}>{error}</div>
+        ) : (
+          <div className="inventory-grid">
+            {filledSlots.map((item, idx) => (
+              item ? (
+                <div key={item._id} className="inventory-card">
+                  <div className="inventory-image">
+                    {/* Si tienes imágenes asociadas a los nombres, puedes mapearlas aquí */}
+                    <img src={`/src/assets/images/${item.name.replace(/ /g, '').toLowerCase()}.png`} alt={item.name} onError={e => e.target.style.display='none'} />
+                  </div>
+                  <div className="inventory-info">
+                    <h3>{item.name}</h3>
+                    <p className="inventory-description">Categoría: {item.category}</p>
+                    <div className="inventory-level">Estado: {item.condition}</div>
+                    <div className="inventory-level">Precio compra: ${item.purchasePrice}</div>
                   </div>
                 </div>
-              </div>
-            ) : (
-              <div key={"empty-"+idx} className="inventory-card empty-slot"></div>
-            )
-          ))}
-        </div>
+              ) : (
+                <div key={"empty-"+idx} className="inventory-card empty-slot"></div>
+              )
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

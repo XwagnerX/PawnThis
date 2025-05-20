@@ -1,69 +1,48 @@
 import mongoose from 'mongoose';
 
 const itemSchema = new mongoose.Schema({
-    nombre: {
+    name: {
         type: String,
-        required: true,
-        trim: true
+        required: [true, 'El nombre del item es requerido']
     },
-    descripcion: {
+    condition: {
         type: String,
-        required: true
+        required: [true, 'La condición del item es requerida']
     },
-    categoria: {
+    requestedPrice: {
+        type: Number,
+        required: [true, 'El precio solicitado es requerido']
+    },
+    purchasePrice: {
+        type: Number,
+        required: [true, 'El precio de compra es requerido']
+    },
+    category: {
         type: String,
-        required: true,
-        enum: ['joyas', 'electronica', 'herramientas', 'otros']
+        required: [true, 'La categoría del item es requerida'],
+        enum: ['relojes', 'joyeria', 'antiguedades', 'arte', 'coleccionables']
     },
-    valorEstimado: {
-        type: Number,
-        required: true
+    gameId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Game',
+        required: [true, 'El ID del juego es requerido']
     },
-    valorPrestado: {
-        type: Number,
-        required: true
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: [true, 'El ID del usuario es requerido']
     },
-    tasaInteres: {
-        type: Number,
-        required: true
-    },
-    fechaEmpeno: {
+    createdAt: {
         type: Date,
         default: Date.now
-    },
-    fechaVencimiento: {
-        type: Date,
-        required: true
-    },
-    estado: {
-        type: String,
-        enum: ['empeñado', 'redimido', 'vencido', 'vendido'],
-        default: 'empeñado'
-    },
-    fotos: [{
-        type: String
-    }],
-    notas: {
-        type: String
-    },
-    historialPagos: [{
-        fecha: {
-            type: Date,
-            default: Date.now
-        },
-        monto: {
-            type: Number,
-            required: true
-        },
-        tipo: {
-            type: String,
-            enum: ['interés', 'capital', 'multa'],
-            required: true
-        }
-    }]
+    }
 }, {
     timestamps: true
 });
+
+// Agregar índices para mejorar el rendimiento
+itemSchema.index({ gameId: 1, userId: 1 });
+itemSchema.index({ category: 1 });
 
 const Item = mongoose.model('Item', itemSchema);
 export default Item; 

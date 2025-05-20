@@ -28,7 +28,7 @@ function App() {
           }
         />
         <Route
-          path="/game/negotiation"
+          path="/game/negotiation/:gameId"
           element={
             <ProtectedRoute>
               <ClientNegotiation />

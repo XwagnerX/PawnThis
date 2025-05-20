@@ -51,17 +51,51 @@ export const createGameState = async (req, res) => {
 
 export const updateGameState = async (req, res) => {
   try {
-    const gameState = await GameState.findOneAndUpdate(
-      { userId: req.user._id, isActive: true },
-      { ...req.body, lastPlayed: Date.now() },
-      { new: true }
-    );
-    if (!gameState) {
-      return res.status(404).json({ message: 'No se encontró la partida' });
+    const gameId = req.params.id;
+    if (!gameId) {
+      return res.status(400).json({ message: 'Se requiere ID del juego' });
     }
-    res.json(gameState);
+
+    // Verificar que el juego existe
+    const existingGame = await GameState.findById(gameId);
+    if (!existingGame) {
+      return res.status(404).json({ message: 'Juego no encontrado' });
+    }
+
+    // Preparar los datos de actualización
+    const updateData = {
+      ...req.body,
+      lastPlayed: new Date()
+    };
+
+    // Actualizar el juego
+    const updatedGame = await GameState.findByIdAndUpdate(
+      gameId,
+      updateData,
+      { 
+        new: true, 
+        runValidators: true,
+        context: 'query'
+      }
+    );
+
+    if (!updatedGame) {
+      return res.status(404).json({ message: 'No se pudo actualizar el juego' });
+    }
+
+    console.log('Juego actualizado:', {
+      id: updatedGame._id,
+      money: updatedGame.money,
+      lastPlayed: updatedGame.lastPlayed
+    });
+
+    res.json(updatedGame);
   } catch (error) {
-    res.status(500).json({ message: 'Error al actualizar el estado del juego' });
+    console.error('Error al actualizar el juego:', error);
+    res.status(500).json({ 
+      message: 'Error al actualizar el juego',
+      error: error.message
+    });
   }
 };
 
@@ -78,5 +112,19 @@ export const deactivateGameState = async (req, res) => {
     res.json({ message: 'Partida desactivada' });
   } catch (error) {
     res.status(500).json({ message: 'Error al desactivar la partida' });
+  }
+};
+
+// Obtener un juego específico por ID
+export const getGameById = async (req, res) => {
+  try {
+    const game = await GameState.findById(req.params.id);
+    if (!game) {
+      return res.status(404).json({ message: 'Juego no encontrado' });
+    }
+    res.json(game);
+  } catch (error) {
+    console.error('Error al obtener el juego:', error);
+    res.status(500).json({ message: 'Error al obtener el juego' });
   }
 }; 
