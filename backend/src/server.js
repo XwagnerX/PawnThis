@@ -7,6 +7,8 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
 import itemRoutes from './routes/item.routes.js';
+import gameStateRoutes from './routes/gameStateRoutes.js';
+import clientRoutes from './routes/client.routes.js';
 
 dotenv.config();
 
@@ -25,6 +27,8 @@ mongoose.connect(process.env.MONGODB_URI)
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/items', itemRoutes);
+app.use('/api/game', gameStateRoutes);
+app.use('/api/clients', clientRoutes);
 
 // Puerto
 const PORT = process.env.PORT || 5000;

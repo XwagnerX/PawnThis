@@ -1,74 +1,104 @@
 .negotiation-scene {
   width: 100vw;
   height: 100vh;
-  background-size: 80%;
+  background-size: contain;
   background-repeat: no-repeat;
-  background-position: 0% center;
+  background-position: left;
   background-color: #000;
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  overflow: hidden;
+  overflow: auto;
   position: fixed;
   top: 0;
   left: 0;
 }
 
 .negotiation-content {
-  background-color: rgba(65, 32, 8);
+  background-color: rgba(65, 32, 8, 0.98);
   padding: 2rem;
-  width: 90%;
-  max-width: 500px;
+  width: 90vw;
+  max-width: 32rem;
   color: #FEFFD4;
-  margin-right: 0;
-  margin-top: 0;
-  margin-bottom: 0;
-  height: 100vh;
+  margin: 0;
+  height: 95vh;
+  min-height: 30rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border-radius: 0;
+  border-radius: 1.2rem 0 0 1.2rem;
+  box-shadow: 0 0 2rem #000a;
+  overflow-y: auto;
 }
 
 @media (max-width: 900px) {
   .negotiation-content {
-    margin-right: 2vw;
-    max-width: 95vw;
+    max-width: 98vw;
+    width: 98vw;
+    min-height: 60vh;
+    border-radius: 0;
+    padding: 1.2rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .negotiation-content {
+    max-width: 100vw;
+    width: 100vw;
+    min-height: 60vh;
+    border-radius: 0;
+    padding: 0.7rem;
+  }
+  .client-info h2 {
+    font-size: 1.3rem;
+  }
+  .item-details h3 {
+    font-size: 1.1rem;
+  }
+  .current-price {
+    font-size: 1.3rem;
+  }
+  .action-button {
+    font-size: 1rem;
+    min-width: 7rem;
+    padding: 0.7rem 1rem;
   }
 }
 
 .client-info {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.2rem;
   flex: 0 0 auto;
 }
 
 .client-info h2 {
   font-size: 2rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.7rem;
 }
 
 .item-details {
   background-color: rgba(254, 255, 212, 0.1);
   padding: 1rem;
-  border-radius: 10px;
+  border-radius: 0.7rem;
   margin-top: 1rem;
 }
 
 .item-details h3 {
   color: #FEFFD4;
   margin-bottom: 0.5rem;
+  font-size: 1.2rem;
 }
 
 .item-details p {
   margin: 0.5rem 0;
   color: #FEFFD4;
+  font-size: 1rem;
 }
 
 .negotiation-controls {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.2rem;
   flex: 1;
   justify-content: center;
 }
@@ -101,7 +131,8 @@
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  margin-bottom: 2rem;
+  margin-bottom: 1.2rem;
+  flex-wrap: wrap;
 }
 
 .chips-group {
@@ -111,7 +142,7 @@
 }
 
 .chips-symbol {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: bold;
   margin-bottom: 0.2rem;
   line-height: 1;
@@ -135,8 +166,8 @@
 }
 
 .chip-img {
-  width: 45px;
-  height: 45px;
+  width: 2.5rem;
+  height: 2.5rem;
   object-fit: contain;
   cursor: pointer;
   transition: transform 0.15s, box-shadow 0.15s;
@@ -153,10 +184,10 @@
 }
 
 .current-price {
-  font-size: 2.2rem;
+  font-size: 2rem;
   font-weight: bold;
   color: #FEFFD4;
-  min-width: 100px;
+  min-width: 5rem;
   text-align: center;
 }
 
@@ -197,20 +228,27 @@
   border: 2px solid #FEFFD4;
 }
 
-.action-buttons {
+.action-buttons,
+.action-buttons.always-visible {
   display: flex;
   justify-content: center;
-  gap: 2rem;
-  margin-top: 1rem;
+  gap: 1.2rem;
+  margin-top: 1.5rem;
+  padding: 1rem 0 0 0;
+  background: none;
+  border-radius: 0;
+  flex-wrap: wrap;
 }
 
 .action-button {
   padding: 1rem 2rem;
   border: none;
-  border-radius: 5px;
+  border-radius: 0.5rem;
   font-size: 1.2rem;
   cursor: pointer;
   transition: all 0.3s;
+  min-width: 10rem;
+  text-align: center;
 }
 
 .action-button.reject {
@@ -230,9 +268,16 @@
   border: 1px solid #FEFFD4;
 }
 
-.action-button.accept:hover {
+.action-button.accept:hover:not(:disabled) {
   background-color: rgba(0, 255, 0, 0.5);
   border: 2px solid #FEFFD4;
+}
+
+.action-button:disabled {
+  background-color: rgba(128, 128, 128, 0.3);
+  color: #bdbdbd;
+  border: 1px solid #bdbdbd;
+  cursor: not-allowed;
 }
 
 .offer-button {
@@ -241,9 +286,9 @@
   background-color: #FEFFD4;
   color: #3F1518;
   border: 2px solid #FEFFD4;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   padding: 0.9rem 2.5rem;
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s;
@@ -275,11 +320,59 @@
 }
 
 .chips-label-left {
-  /* Opcional: color más rojizo */
   color: #ffb3b3;
 }
 
 .chips-label-right {
-  /* Opcional: color más verdoso */
   color: #b3ffb3;
+}
+
+.current-offer {
+  color: #4CAF50;
+  font-weight: bold;
+  font-size: 1.1em;
+  margin: 10px 0;
+  padding: 5px;
+  border-radius: 0.3rem;
+  background-color: rgba(76, 175, 80, 0.1);
+}
+
+.personality {
+  color: #ffe082;
+  font-style: italic;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-size: 1.1em;
+}
+
+.client-response {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: rgba(254, 255, 212, 0.1);
+  border-radius: 0.7rem;
+  border-left: 3px solid #ffe082;
+}
+
+.client-response p {
+  margin: 0.5rem 0;
+  color: #FEFFD4;
+}
+
+.client-response p:first-child {
+  font-style: italic;
+  color: #ffe082;
+}
+
+.loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #FEFFD4;
+  font-size: 1.5rem;
 } 
