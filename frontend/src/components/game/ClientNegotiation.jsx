@@ -4,6 +4,7 @@ import '../../styles/ClientNegotiation.css';
 import fondo1 from '../../assets/imagesfondo/TungSahur1.png';
 import fondo2 from '../../assets/imagesfondo/TungSahur2.png';
 import fondo3 from '../../assets/imagesfondo/TungSahur3.png';
+import fondo4 from '../../assets/imagesfondo/TungSahur4.png';
 import ficha1 from '../../assets/images/Ficha1.png';
 import ficha5 from '../../assets/images/Ficha5.png';
 import ficha20 from '../../assets/images/Ficha20.png';
@@ -14,7 +15,7 @@ const ClientNegotiation = () => {
   const [price, setPrice] = useState(100);
   const [customPrice, setCustomPrice] = useState('');
   const [offerSent, setOfferSent] = useState(false);
-  const fondos = [fondo1, fondo2, fondo3];
+  const fondos = [fondo1, fondo2, fondo3, fondo4];
   const [fondoAleatorio] = useState(fondos[Math.floor(Math.random() * fondos.length)]);
 
   const handlePriceChange = (amount) => {
