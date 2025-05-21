@@ -17,10 +17,10 @@
 
 .upgrades-content {
   background-color: rgba(65, 32, 8, 0.95);
-  width: 90%;
-  max-width: 800px;
+  width: 95%;
+  max-width: 1200px;
   height: 90vh;
-  padding: 2rem;
+  padding: 2.5rem;
   color: #FEFFD4;
   overflow-y: auto;
   border-radius: 15px;
@@ -73,8 +73,8 @@
 
 .upgrades-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
 }
 
 .upgrade-card {
@@ -136,19 +136,113 @@
   font-size: 0.9rem;
 }
 
+/* Breakpoints para diferentes tamaños de pantalla */
+@media (max-width: 1400px) {
+  .upgrades-content {
+    max-width: 1000px;
+    padding: 2rem;
+  }
+  
+  .upgrades-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+@media (max-width: 1200px) {
+  .upgrades-content {
+    max-width: 900px;
+  }
+  
+  .upgrades-header h2 {
+    font-size: 2.2rem;
+  }
+  
+  .upgrade-section h3 {
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .upgrades-content {
+    max-width: 800px;
+    padding: 1.8rem;
+  }
+  
+  .upgrades-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .upgrade-card {
+    padding: 1.2rem;
+  }
+}
+
 @media (max-width: 768px) {
   .upgrades-content {
-    width: 100%;
-    padding: 1rem;
+    width: 95%;
+    max-width: 600px;
+    padding: 1.5rem;
+    height: 85vh;
+  }
+
+  .upgrades-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .upgrades-header h2 {
+    font-size: 2rem;
+  }
+
+  .upgrade-section h3 {
+    font-size: 1.4rem;
   }
 
   .upgrades-grid {
     grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+
+  .upgrade-card {
+    padding: 1rem;
   }
 
   .upgrade-button {
     flex-direction: column;
     gap: 0.5rem;
     text-align: center;
+    padding: 0.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .upgrades-content {
+    width: 100%;
+    height: 100vh;
+    border-radius: 0;
+    padding: 1rem;
+  }
+
+  .upgrades-header h2 {
+    font-size: 1.8rem;
+  }
+
+  .upgrade-section h3 {
+    font-size: 1.3rem;
+  }
+
+  .upgrade-card h4 {
+    font-size: 1.2rem;
+  }
+
+  .upgrade-card p {
+    font-size: 0.9rem;
+  }
+
+  .back-button {
+    width: 100%;
+    justify-content: center;
   }
 } 

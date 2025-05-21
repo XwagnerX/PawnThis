@@ -17,15 +17,11 @@ const ClientNegotiation = () => {
   const [price, setPrice] = useState(100);
   const [customPrice, setCustomPrice] = useState('');
   const [offerSent, setOfferSent] = useState(false);
-<<<<<<< HEAD
-  const fondos = [fondo1, fondo2, fondo3, fondo4];
-=======
   const [error, setError] = useState('');
   const [gameState, setGameState] = useState(null);
   const [client, setClient] = useState(null);
   const [clientResponse, setClientResponse] = useState(null);
-  const fondos = [fondo1, fondo2, fondo3];
->>>>>>> a5c3acb3d10e3dd5c72d25f64511bbec70c80ad9
+  const fondos = [fondo1, fondo2, fondo3, fondo4];
   const [fondoAleatorio] = useState(fondos[Math.floor(Math.random() * fondos.length)]);
 
   useEffect(() => {
@@ -193,7 +189,7 @@ const ClientNegotiation = () => {
             onClick={handleOffer}
             disabled={offerSent}
           >
-            {offerSent ? 'Oferta Establecida!' : 'Establecer Oferta'}
+            {offerSent ? 'Oferta Enviada!' : 'Hacer Oferta'}
           </button>
         </div>
 
