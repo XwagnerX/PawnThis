@@ -1,0 +1,12 @@
+.item-condition {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin: 5px 0;
+
+  .star-icon {
+    color: #FFD700;
+    font-size: 1.2rem;
+    filter: drop-shadow(0 0 2px rgba(255, 215, 0, 0.5));
+  }
+} 

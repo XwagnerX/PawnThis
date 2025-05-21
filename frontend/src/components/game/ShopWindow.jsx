@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from '../../config/axios';
 import '../../styles/ShopWindow.css';
+import ItemCondition from '../common/ItemCondition';
 
 const ShopWindow = () => {
   const navigate = useNavigate();
@@ -143,8 +144,21 @@ const ShopWindow = () => {
                 </div>
                 <div className="item-info">
                   <h3>{item.name}</h3>
+                  <div className="condition-display">
+                    <span>Estado: </span>
+                    <ItemCondition condition={item.condition} />
+                  </div>
                   <p className="item-description">Categoría: {item.category}</p>
-                  <div className="item-price">Precio compra: ${item.purchasePrice}</div>
+                  <div className="item-price">
+                    <div className="price-row">
+                      <span>Precio mercado: </span>
+                      <span className="market-price">${item.requestedPrice}</span>
+                    </div>
+                    <div className="price-row">
+                      <span>Precio compra: </span>
+                      <span className="purchase-price">${item.purchasePrice}</span>
+                    </div>
+                  </div>
                   {item.forSale ? (
                     <>
                       <div className="item-price" style={{ color: '#ffe082' }}>En venta por: ${item.salePrice}</div>

@@ -11,6 +11,7 @@ import ficha1 from '../../assets/images/Ficha1.png';
 import ficha5 from '../../assets/images/Ficha5.png';
 import ficha20 from '../../assets/images/Ficha20.png';
 import ficha100 from '../../assets/images/Ficha100.png';
+import ItemCondition from '../common/ItemCondition';
 
 const ClientNegotiation = () => {
   const navigate = useNavigate();
@@ -148,7 +149,10 @@ const ClientNegotiation = () => {
           <p className="personality">{client.personalityDescription}</p>
           <div className="item-details">
             <h3>Objeto: {client.item.name}</h3>
-            <p>Estado: {client.item.condition}</p>
+            <div className="condition-display">
+              <span>Estado: </span>
+              <ItemCondition condition={client.item.condition} />
+            </div>
             <p>Precio solicitado: ${client.item.requestedPrice}</p>
             <p className="current-offer">Tu oferta actual: ${price}</p>
             {gameState && <p>Tu dinero: ${gameState.money}</p>}
