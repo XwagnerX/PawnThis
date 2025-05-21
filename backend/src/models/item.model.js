@@ -35,6 +35,22 @@ const itemSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    salePrice: {
+        type: Number,
+        default: null
+    },
+    forSale: {
+        type: Boolean,
+        default: false
+    },
+    saleStartTime: {
+        type: Date,
+        default: null
+    },
+    imageUrl: {
+        type: String,
+        default: null
     }
 }, {
     timestamps: true

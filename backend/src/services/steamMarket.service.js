@@ -102,4 +102,30 @@ export const getRandomPawnShopItem = async () => {
 const getRandomCondition = () => {
     const conditions = ['Excelente', 'Bueno', 'Regular', 'Usado'];
     return conditions[Math.floor(Math.random() * conditions.length)];
+};
+
+// Obtener la URL de la imagen de un item del Steam Market
+export const getSteamItemImageUrl = async (itemName, appId = '730') => {
+    try {
+        // Usamos la API de Steam Community para obtener detalles del item
+        const response = await axios.get(`https://steamcommunity.com/market/listings/${appId}/${encodeURIComponent(itemName)}`);
+        // Extraer la URL de la imagen del HTML (no hay endpoint oficial para esto)
+        const match = response.data.match(/<img class="market_listing_item_img" src="([^"]+)"/);
+        if (match && match[1]) {
+            return match[1];
+        }
+    } catch (error) {
+        // Si falla, intentamos buscar una imagen en DuckDuckGo
+        try {
+            const ddgRes = await axios.get(`https://duckduckgo.com/?q=${encodeURIComponent(itemName)}&iax=images&ia=images`);
+            const imgMatch = ddgRes.data.match(/<img[^>]+src="([^"]+)"/);
+            if (imgMatch && imgMatch[1]) {
+                return imgMatch[1];
+            }
+        } catch (e) {
+            // Si también falla, devolvemos una imagen de placeholder
+            return 'https://via.placeholder.com/120x120?text=No+Image';
+        }
+    }
+    return 'https://via.placeholder.com/120x120?text=No+Image';
 }; 
