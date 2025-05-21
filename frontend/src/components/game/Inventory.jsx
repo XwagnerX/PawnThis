@@ -62,10 +62,26 @@ const Inventory = () => {
         ) : (
           <div className="inventory-grid">
             {filledSlots.map((item, idx) => (
-              item ? (
+              item && item.imageUrl ? (
                 <div key={item._id} className="inventory-card">
                   <div className="inventory-image">
-                    <img src={item.imageUrl || 'https://placehold.co/120x120?text=No+Image'} alt={item.name} style={{ maxWidth: '100%', maxHeight: '100%' }} />
+                    <img 
+                      src={item.imageUrl} 
+                      alt={item.name} 
+                      style={{ 
+                        width: '100%',
+                        height: '180px',
+                        objectFit: 'cover',
+                        borderRadius: '8px',
+                        marginBottom: '1rem'
+                      }} 
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.style.display = 'none';
+                        e.target.parentElement.style.display = 'none';
+                        e.target.parentElement.parentElement.style.display = 'none';
+                      }}
+                    />
                   </div>
                   <div className="inventory-info">
                     <h3>{item.name}</h3>

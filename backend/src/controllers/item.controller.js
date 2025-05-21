@@ -103,6 +103,11 @@ export const purchaseItem = async (req, res) => {
 
         // Obtener la imagen del item
         const imageUrl = await getSteamItemImageUrl(itemName);
+        
+        // Si no se pudo obtener una imagen, no creamos el item
+        if (!imageUrl) {
+            return res.status(400).json({ message: 'No se pudo obtener una imagen para el item' });
+        }
 
         // Crear el nuevo item
         const newItem = new Item({
@@ -113,7 +118,7 @@ export const purchaseItem = async (req, res) => {
             category,
             gameId,
             userId: req.user.id,
-            imageUrl // Guardar la URL de la imagen
+            imageUrl
         });
 
         console.log('Intentando guardar item:', newItem);
