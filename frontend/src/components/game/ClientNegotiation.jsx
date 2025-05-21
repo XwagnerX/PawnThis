@@ -131,11 +131,7 @@ const ClientNegotiation = () => {
       navigate('/game');
     } catch (error) {
       console.error('Error en el trato:', error);
-      if (error.response?.status === 400 && error.response?.data?.message === 'No se pudo obtener una imagen para el item') {
-        setError('No se pudo completar la compra porque no se encontró una imagen adecuada para el item. Intenta con otro item.');
-      } else {
-        setError(error.response?.data?.message || 'Error al procesar el trato');
-      }
+      setError(error.response?.data?.message || 'Error al procesar el trato');
     }
   };
 

@@ -62,11 +62,11 @@ const Inventory = () => {
         ) : (
           <div className="inventory-grid">
             {filledSlots.map((item, idx) => (
-              item && item.imageUrl ? (
+              item ? (
                 <div key={item._id} className="inventory-card">
                   <div className="inventory-image">
                     <img 
-                      src={item.imageUrl} 
+                      src={item.imageUrl || 'https://placehold.co/400x400/412008/FEFFD4?text=No+Image'} 
                       alt={item.name} 
                       style={{ 
                         width: '100%',
@@ -77,9 +77,7 @@ const Inventory = () => {
                       }} 
                       onError={(e) => {
                         e.target.onerror = null;
-                        e.target.style.display = 'none';
-                        e.target.parentElement.style.display = 'none';
-                        e.target.parentElement.parentElement.style.display = 'none';
+                        e.target.src = `https://placehold.co/400x400/412008/FEFFD4?text=${encodeURIComponent(item.name)}`;
                       }}
                     />
                   </div>

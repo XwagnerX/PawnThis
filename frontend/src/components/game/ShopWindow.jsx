@@ -122,11 +122,11 @@ const ShopWindow = () => {
           <div style={{ color: 'red', textAlign: 'center' }}>{error}</div>
         ) : (
           <div className="shop-window-grid">
-            {items.filter(item => item.imageUrl).map(item => (
+            {items.map(item => (
               <div key={item._id} className="shop-item-card">
                 <div className="item-image">
                   <img 
-                    src={item.imageUrl} 
+                    src={item.imageUrl || 'https://placehold.co/400x400/412008/FEFFD4?text=No+Image'} 
                     alt={item.name} 
                     style={{ 
                       width: '100%',
@@ -137,9 +137,7 @@ const ShopWindow = () => {
                     }} 
                     onError={(e) => {
                       e.target.onerror = null;
-                      e.target.style.display = 'none';
-                      e.target.parentElement.style.display = 'none';
-                      e.target.parentElement.parentElement.style.display = 'none';
+                      e.target.src = `https://placehold.co/400x400/412008/FEFFD4?text=${encodeURIComponent(item.name)}`;
                     }}
                   />
                 </div>
