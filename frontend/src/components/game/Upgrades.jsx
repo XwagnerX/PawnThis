@@ -40,23 +40,31 @@ const Upgrades = () => {
         ]
       },
       {
-        id: 'lieDetection',
-        name: 'Detección de Mentiras',
-        description: 'Aprende a identificar cuando los clientes mienten sobre sus productos',
+        id: 'expert',
+        name: 'Experto',
+        description: 'Conoces al instante el verdadero valor de los objetos, lo que te permite hacer mejores compras y evitar fraudes.',
         levels: [
-          { level: 1, cost: 1500, effect: 'Detecta mentiras básicas' },
-          { level: 2, cost: 3000, effect: 'Detecta mentiras avanzadas' },
-          { level: 3, cost: 6000, effect: 'Detecta todas las mentiras' }
+          {level: 1,cost: 10000, effect: '' },
         ]
       },
       {
-        id: 'patience',
-        name: 'Control Emocional',
-        description: 'Mejora tu paciencia y capacidad de manejar situaciones difíciles',
+        id: 'fame',
+        name: 'Fama',
+        description: 'Aumenta tu reputación, lo que te permite obtener más dinero en cada venta gracias a tu prestigio.',
         levels: [
-          { level: 1, cost: 1200, effect: '+15% en negociaciones difíciles' },
-          { level: 2, cost: 2500, effect: '+30% en negociaciones difíciles' },
-          { level: 3, cost: 5000, effect: '+50% en negociaciones difíciles' }
+          { level: 1, cost: 1200, effect: '+5% de ganancia en cada venta' },
+          { level: 2, cost: 2500, effect: '+10% de ganancia en cada venta' },
+          { level: 3, cost: 5000, effect: '+15% de ganancia en cada venta' }
+        ]
+      },
+      {
+        id: 'fast_sale',
+        name: 'Ventas Rápidas',
+        description: 'Optimiza tus procesos y estrategias para vender objetos más rápido.',
+        levels: [
+          { level: 1, cost: 1000, effect: 'Reduce el tiempo de venta en un 5%' },
+          { level: 2, cost: 2200, effect: 'Reduce el tiempo de venta en un 10%' },
+          { level: 3, cost: 4500, effect: 'Reduce el tiempo de venta en un 15%' }
         ]
       }
     ]

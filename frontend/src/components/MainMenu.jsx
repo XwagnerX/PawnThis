@@ -120,7 +120,7 @@ const MainMenu = () => {
         <div className="menu-buttons">
           {hasActiveGame && (
             <button className="menu-button" onClick={handleContinueGame}>
-              <i className="fas fa-play"></i> Continuar Partida
+              <i className="fas fa-play"></i> Continuar
             </button>
           )}
           <button className="menu-button" onClick={handleNewGame}>
