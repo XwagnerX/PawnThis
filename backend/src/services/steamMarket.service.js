@@ -104,40 +104,54 @@ const getRandomCondition = () => {
     return conditions[Math.floor(Math.random() * conditions.length)];
 };
 
+// Mapeo de categorías a términos de búsqueda específicos
+const CATEGORY_SEARCH_TERMS = {
+    relojes: ['vintage watch', 'luxury watch', 'antique clock'],
+    joyeria: ['silver necklace', 'gold jewelry', 'diamond ring', 'pearl earrings'],
+    antiguedades: ['antique vase', 'vintage camera', 'old coin', 'antique clock'],
+    arte: ['oil painting', 'sculpture', 'vintage poster', 'art print'],
+    coleccionables: ['rare stamp', 'trading card', 'comic book', 'collectible figure']
+};
+
 // Obtener la URL de la imagen de un item del Steam Market
 export const getSteamItemImageUrl = async (itemName, appId = '730') => {
     try {
-        // Primero intentamos con la API de Steam Community
-        const response = await axios.get(`https://steamcommunity.com/market/listings/${appId}/${encodeURIComponent(itemName)}`);
-        const match = response.data.match(/<img class="market_listing_item_img" src="([^"]+)"/);
-        if (match && match[1]) {
-            return match[1];
-        }
-    } catch (error) {
-        console.log('Error al obtener imagen de Steam:', error.message);
-    }
+        // Usar la API de Unsplash para buscar imágenes específicas
+        const response = await axios.get('https://api.unsplash.com/search/photos', {
+            params: {
+                query: itemName,
+                per_page: 1,
+                orientation: 'squarish'
+            },
+            headers: {
+                'Authorization': `Client-ID ${process.env.UNSPLASH_ACCESS_KEY}`
+            }
+        });
 
-    try {
-        // Si falla Steam, intentamos con DuckDuckGo
-        const ddgRes = await axios.get(`https://duckduckgo.com/?q=${encodeURIComponent(itemName)}+image&iax=images&ia=images`);
-        const imgMatch = ddgRes.data.match(/<img[^>]+src="([^"]+)"/);
-        if (imgMatch && imgMatch[1]) {
-            return imgMatch[1];
+        if (response.data.results && response.data.results.length > 0) {
+            return response.data.results[0].urls.regular;
         }
-    } catch (error) {
-        console.log('Error al obtener imagen de DuckDuckGo:', error.message);
-    }
 
-    try {
-        // Si falla DuckDuckGo, intentamos con Unsplash
-        const unsplashRes = await axios.get(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(itemName)}&client_id=${process.env.UNSPLASH_ACCESS_KEY}`);
-        if (unsplashRes.data.results && unsplashRes.data.results.length > 0) {
-            return unsplashRes.data.results[0].urls.regular;
+        // Si no hay resultados, intentar con una búsqueda más genérica
+        const categoryResponse = await axios.get('https://api.unsplash.com/search/photos', {
+            params: {
+                query: itemName.split(' ')[0], // Usar solo la primera palabra
+                per_page: 1,
+                orientation: 'squarish'
+            },
+            headers: {
+                'Authorization': `Client-ID ${process.env.UNSPLASH_ACCESS_KEY}`
+            }
+        });
+
+        if (categoryResponse.data.results && categoryResponse.data.results.length > 0) {
+            return categoryResponse.data.results[0].urls.regular;
         }
+
+        throw new Error('No se encontraron imágenes');
     } catch (error) {
         console.log('Error al obtener imagen de Unsplash:', error.message);
+        // Si falla, devolvemos una imagen de placeholder personalizada
+        return `https://placehold.co/400x400/412008/FEFFD4?text=${encodeURIComponent(itemName)}`;
     }
-
-    // Si todo falla, devolvemos una imagen de placeholder personalizada
-    return `https://placehold.co/400x400/412008/FEFFD4?text=${encodeURIComponent(itemName)}`;
 }; 
