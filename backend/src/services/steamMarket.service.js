@@ -107,74 +107,37 @@ const getRandomCondition = () => {
 // Obtener la URL de la imagen de un item del Steam Market
 export const getSteamItemImageUrl = async (itemName, appId = '730') => {
     try {
-        // Primero intentamos con la API de Wikipedia
-        const searchResponse = await axios.get(`https://es.wikipedia.org/w/api.php`, {
-            params: {
-                action: 'query',
-                list: 'search',
-                srsearch: itemName,
-                format: 'json',
-                origin: '*'
-            }
-        });
-
-        if (searchResponse.data.query.search.length > 0) {
-            const pageId = searchResponse.data.query.search[0].pageid;
-            
-            // Obtener las imágenes de la página
-            const imagesResponse = await axios.get(`https://es.wikipedia.org/w/api.php`, {
-                params: {
-                    action: 'query',
-                    pageids: pageId,
-                    prop: 'images',
-                    format: 'json',
-                    origin: '*'
-                }
-            });
-
-            if (imagesResponse.data.query.pages[pageId].images.length > 0) {
-                // Obtener la URL de la primera imagen
-                const imageTitle = imagesResponse.data.query.pages[pageId].images[0].title;
-                const imageInfoResponse = await axios.get(`https://es.wikipedia.org/w/api.php`, {
-                    params: {
-                        action: 'query',
-                        titles: imageTitle,
-                        prop: 'imageinfo',
-                        iiprop: 'url',
-                        format: 'json',
-                        origin: '*'
-                    }
-                });
-
-                const pages = imageInfoResponse.data.query.pages;
-                const pageId = Object.keys(pages)[0];
-                if (pages[pageId].imageinfo && pages[pageId].imageinfo.length > 0) {
-                    return pages[pageId].imageinfo[0].url;
-                }
-            }
+        // Primero intentamos con la API de Steam Community
+        const response = await axios.get(`https://steamcommunity.com/market/listings/${appId}/${encodeURIComponent(itemName)}`);
+        const match = response.data.match(/<img class="market_listing_item_img" src="([^"]+)"/);
+        if (match && match[1]) {
+            return match[1];
         }
     } catch (error) {
-        console.log('Error al obtener imagen de Wikipedia:', error.message);
+        console.log('Error al obtener imagen de Steam:', error.message);
     }
 
     try {
-        // Si falla Wikipedia, intentamos con la API de Pixabay
-        const pixabayResponse = await axios.get(`https://pixabay.com/api/`, {
-            params: {
-                key: process.env.PIXABAY_API_KEY,
-                q: itemName,
-                image_type: 'photo',
-                per_page: 1
-            }
-        });
-
-        if (pixabayResponse.data.hits && pixabayResponse.data.hits.length > 0) {
-            return pixabayResponse.data.hits[0].webformatURL;
+        // Si falla Steam, intentamos con DuckDuckGo
+        const ddgRes = await axios.get(`https://duckduckgo.com/?q=${encodeURIComponent(itemName)}+image&iax=images&ia=images`);
+        const imgMatch = ddgRes.data.match(/<img[^>]+src="([^"]+)"/);
+        if (imgMatch && imgMatch[1]) {
+            return imgMatch[1];
         }
     } catch (error) {
-        console.log('Error al obtener imagen de Pixabay:', error.message);
+        console.log('Error al obtener imagen de DuckDuckGo:', error.message);
     }
 
-    // Si todo falla, devolvemos null para que el frontend use su imagen por defecto
-    return null;
+    try {
+        // Si falla DuckDuckGo, intentamos con Unsplash
+        const unsplashRes = await axios.get(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(itemName)}&client_id=${process.env.UNSPLASH_ACCESS_KEY}`);
+        if (unsplashRes.data.results && unsplashRes.data.results.length > 0) {
+            return unsplashRes.data.results[0].urls.regular;
+        }
+    } catch (error) {
+        console.log('Error al obtener imagen de Unsplash:', error.message);
+    }
+
+    // Si todo falla, devolvemos una imagen de placeholder personalizada
+    return `https://placehold.co/400x400/412008/FEFFD4?text=${encodeURIComponent(itemName)}`;
 }; 
