@@ -65,8 +65,7 @@ const Inventory = () => {
               item ? (
                 <div key={item._id} className="inventory-card">
                   <div className="inventory-image">
-                    {/* Si tienes imágenes asociadas a los nombres, puedes mapearlas aquí */}
-                    <img src={`/src/assets/images/${item.name.replace(/ /g, '').toLowerCase()}.png`} alt={item.name} onError={e => e.target.style.display='none'} />
+                    <img src={item.imageUrl || 'https://placehold.co/120x120?text=No+Image'} alt={item.name} style={{ maxWidth: '100%', maxHeight: '100%' }} />
                   </div>
                   <div className="inventory-info">
                     <h3>{item.name}</h3>

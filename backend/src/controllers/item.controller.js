@@ -1,5 +1,5 @@
 import Item from '../models/item.model.js';
-import { getSteamItemPrice, getRandomizedPrice, getRandomPawnShopItem } from '../services/steamMarket.service.js';
+import { getSteamItemPrice, getRandomizedPrice, getRandomPawnShopItem, getSteamItemImageUrl } from '../services/steamMarket.service.js';
 
 // Obtener todos los items
 export const getItems = async (req, res) => {
@@ -101,6 +101,9 @@ export const purchaseItem = async (req, res) => {
             return res.status(401).json({ message: 'Usuario no autenticado' });
         }
 
+        // Obtener la imagen del item
+        const imageUrl = await getSteamItemImageUrl(itemName);
+
         // Crear el nuevo item
         const newItem = new Item({
             name: itemName,
@@ -109,7 +112,8 @@ export const purchaseItem = async (req, res) => {
             purchasePrice,
             category,
             gameId,
-            userId: req.user.id
+            userId: req.user.id,
+            imageUrl // Guardar la URL de la imagen
         });
 
         console.log('Intentando guardar item:', newItem);
@@ -135,6 +139,60 @@ export const getItemsByGame = async (req, res) => {
     const userId = req.user.id;
     const items = await Item.find({ gameId, userId });
     res.json(items);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Poner un item a la venta
+export const putItemForSale = async (req, res) => {
+  try {
+    const { itemId } = req.params;
+    const { salePrice } = req.body;
+    const userId = req.user.id;
+    const item = await Item.findOne({ _id: itemId, userId });
+    if (!item) return res.status(404).json({ message: 'Item no encontrado' });
+    // Validar que el precio no supere el 30% más que requestedPrice
+    const maxPrice = Math.round(item.requestedPrice * 1.3);
+    if (salePrice > maxPrice) {
+      return res.status(400).json({ message: `El precio máximo permitido es $${maxPrice}` });
+    }
+    item.salePrice = salePrice;
+    item.forSale = true;
+    item.saleStartTime = new Date();
+    await item.save();
+    res.json({ message: 'Item puesto a la venta', item });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Completar la venta (después de 1 minuto)
+export const completeSale = async (req, res) => {
+  try {
+    const { itemId } = req.params;
+    const userId = req.user.id;
+    const item = await Item.findOne({ _id: itemId, userId });
+    if (!item) return res.status(404).json({ message: 'Item no encontrado' });
+    if (!item.forSale || !item.saleStartTime) {
+      return res.status(400).json({ message: 'El item no está en venta' });
+    }
+    // Verificar que haya pasado al menos 1 minuto
+    const now = new Date();
+    const diff = now - item.saleStartTime;
+    if (diff < 60000) {
+      return res.status(400).json({ message: 'Aún no ha pasado 1 minuto desde que se puso a la venta' });
+    }
+    // Sumar el dinero al jugador (actualizar GameState)
+    const GameState = (await import('../models/gameStateModel.js')).default;
+    const gameState = await GameState.findOne({ _id: item.gameId, userId });
+    if (gameState) {
+      gameState.money += item.salePrice;
+      await gameState.save();
+    }
+    // Eliminar el item
+    await item.deleteOne();
+    res.json({ message: 'Item vendido exitosamente', money: gameState ? gameState.money : undefined });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

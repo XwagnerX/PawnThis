@@ -24,6 +24,7 @@ const ClientNegotiation = () => {
   const [clientResponse, setClientResponse] = useState(null);
   const fondos = [fondo1, fondo2, fondo3, fondo4, fondo5];
   const [fondoAleatorio] = useState(fondos[Math.floor(Math.random() * fondos.length)]);
+  const [offerAttempts, setOfferAttempts] = useState(0);
 
   useEffect(() => {
     if (!gameId) {
@@ -74,16 +75,16 @@ const ClientNegotiation = () => {
 
   const handleOffer = async () => {
     if (!client) return;
-
+    if (offerAttempts >= 2) return;
     try {
       const response = await axios.post('/api/clients/evaluate-offer', {
         requestedPrice: client.item.requestedPrice,
         offeredPrice: price,
         personality: client.personality
       });
-
       setClientResponse(response.data);
       setOfferSent(true);
+      setOfferAttempts(attempts => attempts + 1);
     } catch (error) {
       console.error('Error al evaluar oferta:', error);
       setError('Error al evaluar la oferta');
@@ -188,9 +189,9 @@ const ClientNegotiation = () => {
           <button 
             className="offer-button"
             onClick={handleOffer}
-            disabled={offerSent}
+            disabled={offerSent && (clientResponse?.accepted || offerAttempts >= 2)}
           >
-            {offerSent ? 'Oferta Enviada!' : 'Hacer Oferta'}
+            {offerSent ? 'Oferta Establecida!' : 'Establecer Oferta'}
           </button>
         </div>
 
@@ -207,7 +208,7 @@ const ClientNegotiation = () => {
             disabled={!offerSent || !clientResponse?.accepted || (gameState && gameState.money < price)}
           >
             {!offerSent ? 'Esperando Oferta' : 
-              !clientResponse?.accepted ? 'Oferta Rechazada' :
+              !clientResponse?.accepted ? (offerAttempts >= 2 ? 'Sin más intentos' : 'Oferta Rechazada') :
               gameState && gameState.money < price ? 'Sin Dinero Suficiente' :
               'Trato Hecho'}
           </button>
