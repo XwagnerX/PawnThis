@@ -7,6 +7,7 @@ import fondo2 from '../../assets/imagesfondo/TungSahur2.png';
 import fondo3 from '../../assets/imagesfondo/TungSahur3.png';
 import fondo4 from '../../assets/imagesfondo/TungSahur4.png';
 import fondo5 from '../../assets/imagesfondo/TungSahur5.png';
+import fondo6 from '../../assets/imagesfondo/TungSahur6.png';
 import ficha1 from '../../assets/images/Ficha1.png';
 import ficha5 from '../../assets/images/Ficha5.png';
 import ficha20 from '../../assets/images/Ficha20.png';
@@ -23,7 +24,7 @@ const ClientNegotiation = () => {
   const [gameState, setGameState] = useState(null);
   const [client, setClient] = useState(null);
   const [clientResponse, setClientResponse] = useState(null);
-  const fondos = [fondo1, fondo2, fondo3, fondo4, fondo5];
+  const fondos = [fondo1, fondo2, fondo3, fondo4, fondo5, fondo6];
   const [fondoAleatorio] = useState(fondos[Math.floor(Math.random() * fondos.length)]);
   const [offerAttempts, setOfferAttempts] = useState(0);
 
