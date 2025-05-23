@@ -14,6 +14,7 @@ const Inventory = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [gameState, setGameState] = useState(null);
+  const [limits, setLimits] = useState({ current: 0, max: 3 });
 
   // Obtener gameId de la URL o del localStorage
   const gameId = params.gameId || localStorage.getItem('gameId');
@@ -33,6 +34,7 @@ const Inventory = () => {
         const itemsResponse = await axios.get(`/api/items/game/${gameId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
+        setItems(itemsResponse.data.items);
         setItems(itemsResponse.data);
 
         // Obtener estado del juego

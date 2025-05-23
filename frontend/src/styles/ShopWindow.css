@@ -286,4 +286,20 @@
   font-size: 0.85rem;
   text-align: center;
   margin: 0.3rem 0;
+}
+
+.shop-stats {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.shop-counter {
+  background-color: rgba(254, 255, 212, 0.1);
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  border: 1px solid rgba(254, 255, 212, 0.3);
+  color: #FEFFD4;
+  font-size: 1.1rem;
+  font-weight: bold;
 } 

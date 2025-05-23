@@ -18,11 +18,13 @@ mongoose.connect(process.env.MONGODB_URI)
 const itemsRouter = require('./routes/items');
 const gamesRouter = require('./routes/games');
 const authRouter = require('./routes/auth');
+const upgradeRouter = require('./routes/upgrade.routes');
 
 // Rutas
 app.use('/api/items', itemsRouter);
 app.use('/api/games', gamesRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/upgrades', upgradeRouter);
 
 // Ruta de prueba
 app.get('/test', (req, res) => {

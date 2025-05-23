@@ -13,6 +13,7 @@ const ShopWindow = () => {
   const [saleInputs, setSaleInputs] = useState({});
   const [money, setMoney] = useState(null);
   const [errorInputs, setErrorInputs] = useState({});
+  const [limits, setLimits] = useState({ shop: { current: 0, max: 0 } });
 
   // Obtener gameId del localStorage
   const gameId = localStorage.getItem('gameId');
@@ -39,6 +40,7 @@ const ShopWindow = () => {
       });
       setItems(response.data);
       setError('');
+      setLimits(prevLimits => ({ ...prevLimits, shop: { current: response.data.length, max: response.data.length } }));
     } catch (err) {
       setError('Error al cargar los items de la tienda');
     } finally {
@@ -112,10 +114,15 @@ const ShopWindow = () => {
       <div className="shop-window-content">
         <div className="shop-window-header">
           <h2>Vitrina de la Tienda</h2>
-          <button className="back-button" onClick={() => navigate('/game')}>
-            <i className="fas fa-arrow-left"></i>
-            <span>Volver</span>
-          </button>
+          <div className="shop-stats">
+            <div className="shop-counter">
+              {limits.shop.current}/{limits.shop.max} objetos
+            </div>
+            <button className="back-button" onClick={() => navigate('/game')}>
+              <i className="fas fa-arrow-left"></i>
+              <span>Volver</span>
+            </button>
+          </div>
         </div>
         {loading ? (
           <div style={{ color: '#FEFFD4', textAlign: 'center' }}>Cargando items...</div>

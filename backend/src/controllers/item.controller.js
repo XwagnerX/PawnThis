@@ -1,11 +1,33 @@
 import Item from '../models/item.model.js';
 import { getSteamItemPrice, getRandomizedPrice, getRandomPawnShopItem, getSteamItemImageUrl } from '../services/steamMarket.service.js';
+import { getCurrentSpaceLimits } from '../services/upgrade.service.js';
 
 // Obtener todos los items
 export const getItems = async (req, res) => {
     try {
-        const items = await Item.find();
-        res.json(items);
+        const { gameId } = req.params;
+        const items = await Item.find({ gameId });
+        
+        // Obtener los límites de espacio actuales
+        const spaceLimits = await getCurrentSpaceLimits(gameId);
+        
+        // Contar items en inventario y en venta
+        const inventoryCount = items.filter(item => !item.forSale).length;
+        const shopCount = items.filter(item => item.forSale).length;
+
+        res.json({
+            items,
+            limits: {
+                inventory: {
+                    current: inventoryCount,
+                    max: spaceLimits.inventory.total
+                },
+                shop: {
+                    current: shopCount,
+                    max: spaceLimits.shop.total
+                }
+            }
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -84,21 +106,23 @@ export const deleteItem = async (req, res) => {
 
 // Comprar un item
 export const purchaseItem = async (req, res) => {
-    console.log('Recibida petición de compra');
-    console.log('Body:', req.body);
-    console.log('Usuario:', req.user);
-    
     try {
         const { gameId, itemName, condition, requestedPrice, purchasePrice, category } = req.body;
 
-        if (!gameId) {
-            console.error('No se proporcionó gameId');
-            return res.status(400).json({ message: 'Se requiere gameId' });
-        }
+        // Obtener los límites de espacio actuales
+        const spaceLimits = await getCurrentSpaceLimits(gameId);
+        
+        // Contar items actuales en inventario
+        const inventoryCount = await Item.countDocuments({ 
+            gameId, 
+            forSale: false 
+        });
 
-        if (!req.user || !req.user.id) {
-            console.error('No se encontró información del usuario en el token');
-            return res.status(401).json({ message: 'Usuario no autenticado' });
+        // Verificar si hay espacio en el inventario
+        if (inventoryCount >= spaceLimits.inventory.total) {
+            return res.status(400).json({ 
+                message: 'No tienes espacio suficiente en el inventario. Considera comprar una mejora.' 
+            });
         }
 
         // Obtener la imagen del item
@@ -113,22 +137,29 @@ export const purchaseItem = async (req, res) => {
             category,
             gameId,
             userId: req.user.id,
-            imageUrl // Guardar la URL de la imagen
+            imageUrl
         });
-
-        console.log('Intentando guardar item:', newItem);
 
         // Guardar el item
         const savedItem = await newItem.save();
-        console.log('Item guardado exitosamente:', savedItem);
-        res.status(201).json(savedItem);
-    } catch (error) {
-        console.error('Error detallado en la compra:', error);
-        res.status(500).json({ 
-            message: 'Error al procesar la compra',
-            error: error.message,
-            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        
+        // Obtener el nuevo conteo de items
+        const newInventoryCount = await Item.countDocuments({ 
+            gameId, 
+            forSale: false 
         });
+
+        res.status(201).json({
+            item: savedItem,
+            limits: {
+                inventory: {
+                    current: newInventoryCount,
+                    max: spaceLimits.inventory.total
+                }
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };
 
@@ -146,25 +177,55 @@ export const getItemsByGame = async (req, res) => {
 
 // Poner un item a la venta
 export const putItemForSale = async (req, res) => {
-  try {
-    const { itemId } = req.params;
-    const { salePrice } = req.body;
-    const userId = req.user.id;
-    const item = await Item.findOne({ _id: itemId, userId });
-    if (!item) return res.status(404).json({ message: 'Item no encontrado' });
-    // Validar que el precio no supere el 30% más que requestedPrice
-    const maxPrice = Math.round(item.requestedPrice * 1.3);
-    if (salePrice > maxPrice) {
-      return res.status(400).json({ message: `El precio máximo permitido es $${maxPrice}` });
+    try {
+        const { itemId } = req.params;
+        const { salePrice } = req.body;
+
+        const item = await Item.findById(itemId);
+        if (!item) {
+            return res.status(404).json({ message: 'Item no encontrado' });
+        }
+
+        // Obtener los límites de espacio actuales
+        const spaceLimits = await getCurrentSpaceLimits(item.gameId);
+        
+        // Contar items actuales en venta
+        const shopCount = await Item.countDocuments({ 
+            gameId: item.gameId, 
+            forSale: true 
+        });
+
+        // Verificar si hay espacio en la tienda
+        if (shopCount >= spaceLimits.shop.total) {
+            return res.status(400).json({ 
+                message: 'No tienes espacio suficiente en la tienda. Considera comprar una mejora.' 
+            });
+        }
+
+        item.forSale = true;
+        item.salePrice = salePrice;
+        item.saleStartTime = new Date();
+        
+        const updatedItem = await item.save();
+        
+        // Obtener el nuevo conteo de items
+        const newShopCount = await Item.countDocuments({ 
+            gameId: item.gameId, 
+            forSale: true 
+        });
+
+        res.json({
+            item: updatedItem,
+            limits: {
+                shop: {
+                    current: newShopCount,
+                    max: spaceLimits.shop.total
+                }
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
-    item.salePrice = salePrice;
-    item.forSale = true;
-    item.saleStartTime = new Date();
-    await item.save();
-    res.json({ message: 'Item puesto a la venta', item });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
 };
 
 // Completar la venta (después de 1 minuto)
