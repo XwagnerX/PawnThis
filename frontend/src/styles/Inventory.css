@@ -279,4 +279,14 @@
   color: #FEFFD4;
   font-size: 1.1rem;
   font-weight: bold;
+}
+
+.inventory-limits {
+  color: #FEFFD4;
+  font-size: 1.1rem;
+  margin: 0 1rem;
+  padding: 0.5rem 1rem;
+  background-color: rgba(65, 32, 8, 0.7);
+  border-radius: 4px;
+  display: inline-block;
 } 

@@ -1,6 +1,7 @@
 import Item from '../models/item.model.js';
 import { getSteamItemPrice, getRandomizedPrice, getRandomPawnShopItem, getSteamItemImageUrl } from '../services/steamMarket.service.js';
 import { getCurrentSpaceLimits } from '../services/upgrade.service.js';
+import { calculateSaleTime } from '../services/sale.service.js';
 
 // Obtener todos los items
 export const getItems = async (req, res) => {
@@ -228,33 +229,54 @@ export const putItemForSale = async (req, res) => {
     }
 };
 
-// Completar la venta (después de 1 minuto)
+// Completar la venta
 export const completeSale = async (req, res) => {
   try {
     const { itemId } = req.params;
     const userId = req.user.id;
+    
     const item = await Item.findOne({ _id: itemId, userId });
     if (!item) return res.status(404).json({ message: 'Item no encontrado' });
+    
     if (!item.forSale || !item.saleStartTime) {
       return res.status(400).json({ message: 'El item no está en venta' });
     }
-    // Verificar que haya pasado al menos 1 minuto
-    const now = new Date();
-    const diff = now - item.saleStartTime;
-    if (diff < 60000) {
-      return res.status(400).json({ message: 'Aún no ha pasado 1 minuto desde que se puso a la venta' });
-    }
-    // Sumar el dinero al jugador (actualizar GameState)
+
+    // Obtener el estado del juego para las mejoras
     const GameState = (await import('../models/gameStateModel.js')).default;
     const gameState = await GameState.findOne({ _id: item.gameId, userId });
-    if (gameState) {
-      gameState.money += item.salePrice;
-      await gameState.save();
+    
+    if (!gameState) {
+      return res.status(404).json({ message: 'Estado del juego no encontrado' });
     }
+
+    // Calcular el tiempo requerido para la venta
+    const requiredTime = await calculateSaleTime(item, gameState);
+    
+    // Verificar que haya pasado el tiempo necesario
+    const now = new Date();
+    const diff = Math.floor((now - item.saleStartTime) / 1000); // Convertir a segundos
+    
+    if (diff < requiredTime) {
+      const timeLeft = requiredTime - diff;
+      return res.status(400).json({ 
+        message: `Aún no ha pasado el tiempo necesario. Faltan ${timeLeft} segundos.` 
+      });
+    }
+
+    // Sumar el dinero al jugador
+    gameState.money += item.salePrice;
+    await gameState.save();
+
     // Eliminar el item
     await item.deleteOne();
-    res.json({ message: 'Item vendido exitosamente', money: gameState ? gameState.money : undefined });
+    
+    res.json({ 
+      message: 'Item vendido exitosamente', 
+      money: gameState.money 
+    });
   } catch (error) {
+    console.error('Error al completar la venta:', error);
     res.status(500).json({ message: error.message });
   }
 }; 

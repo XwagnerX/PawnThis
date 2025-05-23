@@ -14,14 +14,28 @@ const ShopWindow = () => {
   const [money, setMoney] = useState(null);
   const [errorInputs, setErrorInputs] = useState({});
   const [limits, setLimits] = useState({ shop: { current: 0, max: 0 } });
+  const [gameState, setGameState] = useState(null);
 
   // Obtener gameId del localStorage
   const gameId = localStorage.getItem('gameId');
 
   useEffect(() => {
     fetchItems();
+    fetchGameState();
     // eslint-disable-next-line
   }, []);
+
+  const fetchGameState = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`/api/game/${gameId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setGameState(response.data);
+    } catch (err) {
+      console.error('Error al cargar el estado del juego:', err);
+    }
+  };
 
   // Refresca los temporizadores cada segundo
   useEffect(() => {
@@ -88,16 +102,43 @@ const ShopWindow = () => {
     }
   };
 
+  const getBaseTime = (item) => {
+    switch (item.rarity) {
+      case 'common':
+        return 30;
+      case 'uncommon':
+        return 45;
+      case 'rare':
+        return 60;
+      case 'epic':
+        return 90;
+      case 'legendary':
+        return 120;
+      default:
+        return 30;
+    }
+  };
+
   const getTimeLeft = (item) => {
-    if (!item.saleStartTime) return 60;
+    if (!item.saleStartTime) return getBaseTime(item);
+
+    const baseTime = getBaseTime(item);
+    let totalTime = baseTime;
+
+    // Aplicar reducción de tiempo si existe la mejora
+    if (gameState && gameState.saleTimeReduction) {
+      const reduction = gameState.saleTimeReduction / 100;
+      totalTime = Math.floor(baseTime * (1 - reduction));
+    }
+
     const start = new Date(item.saleStartTime).getTime();
     const now = Date.now();
-    const diff = Math.max(0, 60 - Math.floor((now - start) / 1000));
+    const diff = Math.max(0, totalTime - Math.floor((now - start) / 1000));
     return diff;
   };
 
   useEffect(() => {
-    // Venta automática tras 1 minuto
+    // Venta automática cuando el tiempo llega a 0
     items.forEach(item => {
       if (item.forSale && item.saleStartTime) {
         const timeLeft = getTimeLeft(item);

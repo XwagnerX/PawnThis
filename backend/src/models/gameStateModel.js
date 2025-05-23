@@ -18,8 +18,31 @@ const gameStateSchema = new mongoose.Schema({
     quantity: Number
   }],
   upgrades: [{
-    type: String
+    type: {
+      type: String,
+      required: true
+    },
+    level: {
+      type: Number,
+      required: true
+    }
   }],
+  inventorySpace: {
+    type: Number,
+    default: 3
+  },
+  inventoryUpgrades: {
+    type: Number,
+    default: 0
+  },
+  fastSaleUpgrades: {
+    type: Number,
+    default: 0
+  },
+  saleTimeReduction: {
+    type: Number,
+    default: 0
+  },
   lastPlayed: {
     type: Date,
     default: Date.now

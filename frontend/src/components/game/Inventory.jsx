@@ -5,8 +5,6 @@ import '../../styles/Inventory.css';
 import ItemCondition from '../common/ItemCondition';
 import { FaTools } from 'react-icons/fa';
 
-const TOTAL_SLOTS = 10;
-
 const Inventory = () => {
   const navigate = useNavigate();
   const params = useParams();
@@ -14,7 +12,6 @@ const Inventory = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [gameState, setGameState] = useState(null);
-  const [limits, setLimits] = useState({ current: 0, max: 3 });
 
   // Obtener gameId de la URL o del localStorage
   const gameId = params.gameId || localStorage.getItem('gameId');
@@ -34,7 +31,6 @@ const Inventory = () => {
         const itemsResponse = await axios.get(`/api/items/game/${gameId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        setItems(itemsResponse.data.items);
         setItems(itemsResponse.data);
 
         // Obtener estado del juego
@@ -50,6 +46,16 @@ const Inventory = () => {
     };
     fetchData();
   }, [gameId]);
+
+  // Calcular el espacio total del inventario
+  const totalInventorySpace = gameState?.inventorySpace || 3;
+  const currentItems = items?.length || 0;
+
+  // Rellenar los slots vacíos hasta el límite actual
+  const filledSlots = [...(items || [])];
+  while (filledSlots.length < totalInventorySpace) {
+    filledSlots.push(null);
+  }
 
   const calculateRepairCost = (item) => {
     const marketPrice = item.requestedPrice;
@@ -137,17 +143,16 @@ const Inventory = () => {
     }
   };
 
-  // Rellenar los slots vacíos
-  const filledSlots = [...items];
-  while (filledSlots.length < TOTAL_SLOTS) {
-    filledSlots.push(null);
-  }
-
   return (
     <div className="inventory-scene">
       <div className="inventory-content">
         <div className="inventory-header">
           <h2>Inventario</h2>
+          <div className="inventory-stats">
+            <div className="inventory-counter">
+              Espacio: {currentItems}/{totalInventorySpace}
+            </div>
+          </div>
           <button className="back-button" onClick={() => navigate('/game')}>
             <i className="fas fa-arrow-left"></i>
             <span>Volver</span>

@@ -9,6 +9,15 @@ const UPGRADE_CONFIG = {
             { price: 2000, bonus: 15 }
         ]
     },
+    fast_sale: {
+        name: 'Ventas Rápidas',
+        description: 'Optimiza tus procesos y estrategias para vender objetos más rápido',
+        levels: [
+            { price: 1000, bonus: 5 },  // 5% de reducción
+            { price: 2200, bonus: 10 }, // 10% de reducción
+            { price: 4500, bonus: 15 }  // 15% de reducción
+        ]
+    },
     shop_space: {
         name: 'Espacio de Tienda',
         description: 'Amplía el área de exposición de productos',
@@ -62,12 +71,26 @@ export const canPurchaseUpgrade = (type, currentLevel, money) => {
 // Obtener los límites actuales de espacio para un juego
 export const getCurrentSpaceLimits = async (gameId) => {
     try {
-        const inventoryUpgrade = await Upgrade.findOne({ gameId, type: 'inventory_space' });
-        const shopUpgrade = await Upgrade.findOne({ gameId, type: 'shop_space' });
+        // Obtener el estado del juego actual
+        const GameState = (await import('../models/gameStateModel.js')).default;
+        const gameState = await GameState.findById(gameId);
+
+        if (!gameState) {
+            return {
+                inventory: { base: 3, total: 3 },
+                shop: { base: 3, total: 3 }
+            };
+        }
 
         return {
-            inventory: getSpaceLimits('inventory_space', inventoryUpgrade?.level || 0),
-            shop: getSpaceLimits('shop_space', shopUpgrade?.level || 0)
+            inventory: {
+                base: 3,
+                total: gameState.inventorySpace || 3
+            },
+            shop: {
+                base: 3,
+                total: 3 // Por ahora el espacio de la tienda es fijo
+            }
         };
     } catch (error) {
         console.error('Error al obtener límites de espacio:', error);
@@ -76,4 +99,14 @@ export const getCurrentSpaceLimits = async (gameId) => {
             shop: { base: 3, total: 3 }
         };
     }
+};
+
+// Obtener el tiempo de venta reducido según el nivel de mejora
+export const getReducedSaleTime = (baseTime, gameState) => {
+    if (!gameState || !gameState.saleTimeReduction) {
+        return baseTime;
+    }
+
+    const reduction = gameState.saleTimeReduction / 100; // Convertir porcentaje a decimal
+    return Math.floor(baseTime * (1 - reduction));
 }; 
