@@ -27,6 +27,7 @@ const ClientNegotiation = () => {
   const fondos = [fondo1, fondo2, fondo3, fondo4, fondo5, fondo6];
   const [fondoAleatorio] = useState(fondos[Math.floor(Math.random() * fondos.length)]);
   const [offerAttempts, setOfferAttempts] = useState(0);
+  const [isFinalResponse, setIsFinalResponse] = useState(false);
 
   useEffect(() => {
     if (!gameId) {
@@ -87,6 +88,7 @@ const ClientNegotiation = () => {
       setClientResponse(response.data);
       setOfferSent(true);
       setOfferAttempts(attempts => attempts + 1);
+      setIsFinalResponse(true);
     } catch (error) {
       console.error('Error al evaluar oferta:', error);
       setError('Error al evaluar la oferta');
@@ -168,37 +170,39 @@ const ClientNegotiation = () => {
 
         {error && <div className="error-message">{error}</div>}
 
-        <div className="negotiation-controls">
-          <div className="price-chips-row">
-            <div className="chips-group chips-group-left">
-              <div className="chips-symbol chips-symbol-left">−</div>
-              <div className="chips-group-row">
-                <img src={ficha100} alt="-100" className="chip-img" onClick={() => handlePriceChange(-100)} />
-                <img src={ficha20} alt="-20" className="chip-img" onClick={() => handlePriceChange(-20)} />
-                <img src={ficha5} alt="-5" className="chip-img" onClick={() => handlePriceChange(-5)} />
-                <img src={ficha1} alt="-1" className="chip-img" onClick={() => handlePriceChange(-1)} />
+        {!isFinalResponse && (
+          <div className="negotiation-controls">
+            <div className="price-chips-row">
+              <div className="chips-group chips-group-left">
+                <div className="chips-symbol chips-symbol-left">−</div>
+                <div className="chips-group-row">
+                  <img src={ficha100} alt="-100" className="chip-img" onClick={() => handlePriceChange(-100)} />
+                  <img src={ficha20} alt="-20" className="chip-img" onClick={() => handlePriceChange(-20)} />
+                  <img src={ficha5} alt="-5" className="chip-img" onClick={() => handlePriceChange(-5)} />
+                  <img src={ficha1} alt="-1" className="chip-img" onClick={() => handlePriceChange(-1)} />
+                </div>
+              </div>
+              <span className="current-price">${price}</span>
+              <div className="chips-group chips-group-right">
+                <div className="chips-symbol chips-symbol-right">+</div>
+                <div className="chips-group-row">
+                  <img src={ficha1} alt="+1" className="chip-img" onClick={() => handlePriceChange(1)} />
+                  <img src={ficha5} alt="+5" className="chip-img" onClick={() => handlePriceChange(5)} />
+                  <img src={ficha20} alt="+20" className="chip-img" onClick={() => handlePriceChange(20)} />
+                  <img src={ficha100} alt="+100" className="chip-img" onClick={() => handlePriceChange(100)} />
+                </div>
               </div>
             </div>
-            <span className="current-price">${price}</span>
-            <div className="chips-group chips-group-right">
-              <div className="chips-symbol chips-symbol-right">+</div>
-              <div className="chips-group-row">
-                <img src={ficha1} alt="+1" className="chip-img" onClick={() => handlePriceChange(1)} />
-                <img src={ficha5} alt="+5" className="chip-img" onClick={() => handlePriceChange(5)} />
-                <img src={ficha20} alt="+20" className="chip-img" onClick={() => handlePriceChange(20)} />
-                <img src={ficha100} alt="+100" className="chip-img" onClick={() => handlePriceChange(100)} />
-              </div>
-            </div>
-          </div>
 
-          <button 
-            className="offer-button"
-            onClick={handleOffer}
-            disabled={offerSent && (clientResponse?.accepted || offerAttempts >= 2)}
-          >
-            {offerSent ? 'Oferta Establecida!' : 'Establecer Oferta'}
-          </button>
-        </div>
+            <button 
+              className="offer-button"
+              onClick={handleOffer}
+              disabled={offerSent && (clientResponse?.accepted || offerAttempts >= 2)}
+            >
+              {offerSent ? 'Oferta Establecida!' : 'Establecer Oferta'}
+            </button>
+          </div>
+        )}
 
         <div className="action-buttons always-visible">
           <button 

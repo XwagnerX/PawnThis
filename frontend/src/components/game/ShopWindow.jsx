@@ -14,6 +14,7 @@ const ShopWindow = () => {
   const [money, setMoney] = useState(null);
   const [errorInputs, setErrorInputs] = useState({});
   const [limits, setLimits] = useState({ shop: { current: 0, max: 0 } });
+  const [gameState, setGameState] = useState(null);
 
   // Obtener gameId del localStorage
   const gameId = localStorage.getItem('gameId');
@@ -35,14 +36,22 @@ const ShopWindow = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get(`/api/items/game/${gameId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setItems(response.data);
+      const [itemsResponse, gameStateResponse] = await Promise.all([
+        axios.get(`/api/items/game/${gameId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        }),
+        axios.get(`/api/game/${gameId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+      ]);
+
+      setItems(itemsResponse.data);
+      setGameState(gameStateResponse.data);
       setError('');
-      setLimits(prevLimits => ({ ...prevLimits, shop: { current: response.data.length, max: response.data.length } }));
+      setLimits(prevLimits => ({ ...prevLimits, shop: { current: itemsResponse.data.filter(item => item.forSale).length, max: prevLimits.shop.max } }));
     } catch (err) {
-      setError('Error al cargar los items de la tienda');
+      console.error('Error al cargar datos:', err);
+      setError('Error al cargar los datos de la tienda');
     } finally {
       setLoading(false);
     }
@@ -66,11 +75,13 @@ const ShopWindow = () => {
     setErrorInputs(errors => ({ ...errors, [item._id]: null }));
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`/api/items/sell/${item._id}`, { salePrice }, {
+      const response = await axios.put(`/api/items/sell/${item._id}`, { salePrice }, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      fetchItems();
+      setItems(prevItems => prevItems.map(i => i._id === item._id ? response.data.item : i));
+      setLimits(prevLimits => ({ ...prevLimits, shop: { current: prevLimits.shop.current + 1, max: prevLimits.shop.max } }));
     } catch (err) {
+      console.error('Error al poner a la venta:', err);
       setErrorInputs(errors => ({ ...errors, [item._id]: err.response?.data?.message || 'Error al poner a la venta' }));
     }
   };
@@ -82,9 +93,11 @@ const ShopWindow = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMoney(res.data.money);
-      fetchItems();
+      setItems(prevItems => prevItems.filter(i => i._id !== item._id));
+      setLimits(prevLimits => ({ ...prevLimits, shop: { current: prevLimits.shop.current - 1, max: prevLimits.shop.max } }));
     } catch (err) {
       alert(err.response?.data?.message || 'Error al completar la venta');
+      console.error('Error al completar la venta:', err);
     }
   };
 
@@ -92,12 +105,15 @@ const ShopWindow = () => {
     if (!item.saleStartTime) return 60;
     const start = new Date(item.saleStartTime).getTime();
     const now = Date.now();
-    const diff = Math.max(0, 60 - Math.floor((now - start) / 1000));
+    const baseTime = 60;
+    const reduction = gameState?.saleTimeReduction || 0;
+    const totalTime = Math.floor(baseTime * (1 - reduction / 100));
+    const elapsed = Math.floor((now - start) / 1000);
+    const diff = Math.max(0, totalTime - elapsed);
     return diff;
   };
 
   useEffect(() => {
-    // Venta automática tras 1 minuto
     items.forEach(item => {
       if (item.forSale && item.saleStartTime) {
         const timeLeft = getTimeLeft(item);
@@ -106,8 +122,7 @@ const ShopWindow = () => {
         }
       }
     });
-    // eslint-disable-next-line
-  }, [items, timers]);
+  }, [items, timers, gameState]);
 
   return (
     <div className="shop-window-scene">
@@ -128,6 +143,10 @@ const ShopWindow = () => {
           <div style={{ color: '#FEFFD4', textAlign: 'center' }}>Cargando items...</div>
         ) : error ? (
           <div style={{ color: 'red', textAlign: 'center' }}>{error}</div>
+        ) : items.length === 0 && !loading ? (
+          <div style={{ color: '#FEFFD4', textAlign: 'center', marginTop: '20px' }}>
+            No hay objetos en venta en este momento.
+          </div>
         ) : (
           <div className="shop-window-grid">
             {items.map(item => (

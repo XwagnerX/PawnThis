@@ -31,7 +31,7 @@ const Inventory = () => {
         const itemsResponse = await axios.get(`/api/items/game/${gameId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        setItems(itemsResponse.data);
+        setItems(itemsResponse.data.filter(item => !item.forSale));
 
         // Obtener estado del juego
         const gameResponse = await axios.get(`/api/game/${gameId}`, {
@@ -45,6 +45,10 @@ const Inventory = () => {
       }
     };
     fetchData();
+
+    // Añadir un intervalo para actualizar el inventario cada segundo
+    const interval = setInterval(fetchData, 1000);
+    return () => clearInterval(interval);
   }, [gameId]);
 
   // Calcular el espacio total del inventario
@@ -192,7 +196,7 @@ const Inventory = () => {
                     <p className="inventory-description">Categoría: {item.category}</p>
                     <div className="inventory-level">Precio mercado: ${item.requestedPrice}</div>
                     <div className="inventory-level">Precio compra: ${item.purchasePrice}</div>
-                    {item.condition.toLowerCase() !== 'excelente' && (
+                    {item.condition.toLowerCase() !== 'excelente' && !item.isForSale && (
                       <div className="repair-section">
                         <div className="repair-cost">
                           Coste reparación: ${calculateRepairCost(item)}

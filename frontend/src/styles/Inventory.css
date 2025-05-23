@@ -73,6 +73,7 @@
   align-items: start;
   min-height: 400px;
   box-sizing: border-box;
+  width: 100%;
 }
 
 .inventory-card {
@@ -178,19 +179,24 @@
   background: transparent;
   border: 1px dashed rgba(254, 255, 212, 0.15);
   box-shadow: none;
+  width: 100%;
+  max-width: 280px;
+  height: 400px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 @media (max-width: 1100px) {
   .inventory-grid {
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(4, 1fr);
   }
 }
 
 @media (max-width: 700px) {
   .inventory-grid {
     grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(5, 1fr);
   }
 }
 
