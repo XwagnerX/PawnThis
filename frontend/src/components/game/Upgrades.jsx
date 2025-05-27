@@ -156,24 +156,6 @@ const Upgrades = () => {
     ],
     personal: [
       {
-        id: 'charisma',
-        name: 'Carisma',
-        description: 'Mejora tu capacidad de negociación y relaciones con clientes',
-        levels: [
-          { level: 1, cost: 1000, effect: '+10% en precios de venta' },
-          { level: 2, cost: 2000, effect: '+20% en precios de venta' },
-          { level: 3, cost: 4000, effect: '+30% en precios de venta' }
-        ]
-      },
-      {
-        id: 'expert',
-        name: 'Experto',
-        description: 'Conoces al instante el verdadero valor de los objetos, lo que te permite hacer mejores compras y evitar fraudes.',
-        levels: [
-          {level: 1,cost: 10000, effect: '' },
-        ]
-      },
-      {
         id: 'fame',
         name: 'Fama',
         description: 'Aumenta tu reputación, lo que te permite obtener más dinero en cada venta gracias a tu prestigio.',
