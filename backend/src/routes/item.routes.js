@@ -1,6 +1,6 @@
 import express from 'express';
 import { verifyToken } from '../middleware/auth.middleware.js';
-import { getItems, getItemById, createItem, updateItem, deleteItem, purchaseItem, getItemsByGame, putItemForSale, completeSale } from '../controllers/item.controller.js';
+import { getItems, getItemById, createItem, updateItem, deleteItem, purchaseItem, getItemsByGame, putItemForSale, completeSale, getSalesHistory } from '../controllers/item.controller.js';
 
 const router = express.Router();
 
@@ -19,5 +19,6 @@ router.delete('/:id', verifyToken, deleteItem);
 router.get('/game/:gameId', verifyToken, getItemsByGame);
 router.put('/sell/:itemId', verifyToken, putItemForSale);
 router.post('/complete-sale/:itemId', verifyToken, completeSale);
+router.get('/game/:gameId/sales-history', verifyToken, getSalesHistory);
 
 export default router; 

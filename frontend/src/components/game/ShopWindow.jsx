@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from '../../config/axios';
 import '../../styles/ShopWindow.css';
 import ItemCondition from '../common/ItemCondition';
+import SalesHistory from './SalesHistory';
 
 const ShopWindow = () => {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ const ShopWindow = () => {
   const [errorInputs, setErrorInputs] = useState({});
   const [limits, setLimits] = useState({ shop: { current: 0, max: 0 } });
   const [gameState, setGameState] = useState(null);
+  const [showSalesHistory, setShowSalesHistory] = useState(false);
 
   // Obtener gameId del localStorage
   const gameId = localStorage.getItem('gameId');
@@ -133,6 +135,13 @@ const ShopWindow = () => {
             <div className="shop-counter">
               {limits.shop.current}/{limits.shop.max} objetos
             </div>
+            <button 
+              className="history-button"
+              onClick={() => setShowSalesHistory(true)}
+            >
+              <i className="fas fa-history"></i>
+              <span>Historial de Ventas</span>
+            </button>
             <button className="back-button" onClick={() => navigate('/game')}>
               <i className="fas fa-arrow-left"></i>
               <span>Volver</span>
@@ -223,6 +232,11 @@ const ShopWindow = () => {
           )}
         </div>
       </div>
+
+      <SalesHistory 
+        isOpen={showSalesHistory} 
+        onClose={() => setShowSalesHistory(false)} 
+      />
     </div>
   );
 };
