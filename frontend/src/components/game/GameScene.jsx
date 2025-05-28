@@ -6,6 +6,13 @@ import '../../styles/GameScene.css';
 const GameScene = () => {
   const navigate = useNavigate();
   const [gameState, setGameState] = useState(null);
+  
+  // Lee el objeto de usuario completo desde localStorage
+  const storedUser = localStorage.getItem('user');
+  // Parsea el objeto de usuario o usa null si no existe
+  const user = storedUser ? JSON.parse(storedUser) : null;
+  // Obtiene el nombre del usuario o usa 'Jugador' si el objeto de usuario o el nombre no existen
+  const userName = user?.nombre || 'Jugador';
 
   useEffect(() => {
     loadGameState();
@@ -85,7 +92,7 @@ const GameScene = () => {
       <div className="game-content">
         <div className="game-header">
           <div className="player-info">
-            <span className="player-name">Jugador</span>
+            <span className="player-name">{userName}</span>
             <span className="player-money">${gameState?.money || 1000}</span>
           </div>
         </div>

@@ -1,7 +1,7 @@
 .shop-window-scene {
   width: 100vw;
   height: 100vh;
-  background-image: url('../assets/images/FondoMesa2.png');
+  background-image: url('../assets/imagesfondo/fondomadera3.png');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: 0% center;
@@ -295,10 +295,8 @@
 }
 
 .shop-counter {
-  background-color: rgba(254, 255, 212, 0.1);
   padding: 0.5rem 1rem;
   border-radius: 5px;
-  border: 1px solid rgba(254, 255, 212, 0.3);
   color: #FEFFD4;
   font-size: 1.1rem;
   font-weight: bold;
