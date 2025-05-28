@@ -18,6 +18,9 @@ export const evaluateOffer = async (req, res) => {
     try {
         const { requestedPrice, offeredPrice, personality } = req.body;
         
+        // Calcular la diferencia porcentual al inicio
+        const difference = ((offeredPrice - requestedPrice) / requestedPrice) * 100;
+
         // --- Lógica de Negociación Mejorada ---
 
         // 0. Aceptación inmediata si la oferta coincide con el precio solicitado
@@ -41,9 +44,6 @@ export const evaluateOffer = async (req, res) => {
                 final: true // Respuesta final
             });
         }
-
-        // Calcular la diferencia porcentual para la lógica restante
-        const difference = ((offeredPrice - requestedPrice) / requestedPrice) * 100;
 
         // 2. Lógica basada en personalidad y diferencia para respuestas no inmediatas
         let responseText;

@@ -130,7 +130,7 @@ const ShopWindow = () => {
           <h2>Vitrina de la Tienda</h2>
           <div className="shop-stats">
             <div className="shop-counter">
-              {limits.shop.current}/{limits.shop.max} objetos
+              {/* Eliminado: {limits.shop.current}/{limits.shop.max} objetos */}
             </div>
             <button 
               className="history-button"

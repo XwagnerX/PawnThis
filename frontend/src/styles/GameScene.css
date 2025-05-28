@@ -20,8 +20,8 @@
   flex-direction: column;
   padding: 1rem;
   max-width: 100%;
-  box-sizing: border-box; /* Asegurar que el padding se incluya en el ancho */
-  margin-top: calc(0.8rem + 0.8rem + 1.2rem + 1rem); /* Ajustar este valor según la altura real de la cabecera + padding inferior de la cabecera */ /* Añadir margen superior para dejar espacio para la cabecera fija */
+  box-sizing: border-box;
+  margin-top: calc(0.8rem + 0.8rem + 1.2rem + 1rem);
 }
 
 .game-header {
@@ -36,9 +36,9 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 100vw; /* Ocupar todo el ancho de la ventana */
-  z-index: 10; /* Asegurar que esté por encima de otros elementos */
-  box-sizing: border-box; /* Incluir padding en el ancho total */
+  width: 100vw;
+  z-index: 10;
+  box-sizing: border-box;
 }
 
 .player-info {
@@ -157,7 +157,6 @@
   font-size: 1.2rem;
 }
 
-/* Media Queries */
 @media (max-width: 1400px) {
   .shop-counter {
     flex-direction: column;
@@ -231,6 +230,5 @@
 
 .player-name,
 .player-money {
-  /* Añadir una sombra de texto sutil */
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Sombra oscura */
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }

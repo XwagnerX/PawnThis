@@ -88,20 +88,28 @@ const ClientNegotiation = () => {
         personality: client.personality
       });
       
-      const newOfferAttempts = offerAttempts + 1; // Calcular el nuevo número de intentos
-      setOfferAttempts(newOfferAttempts); // Actualizar el estado de intentos
+      const newOfferAttempts = offerAttempts + 1;
+      setOfferAttempts(newOfferAttempts);
 
-      // La respuesta del backend incluye 'negotiating' y 'final'
-      if (response.data.final) {
-        setClientResponse(response.data); // Usar la respuesta final del backend
+      const backendResponse = response.data;
+
+      // Asegurar que 'difference' siempre esté presente en la respuesta del backend
+      const safeBackendResponse = {
+        ...backendResponse,
+        difference: backendResponse.difference !== undefined && backendResponse.difference !== null ? backendResponse.difference : 0 // Usar la diferencia del backend si existe, o 0
+      };
+
+      if (safeBackendResponse.final) {
+        setClientResponse(safeBackendResponse); // Usar la respuesta final segura
         setIsFinalResponse(true);
         setOfferSent(true); // Deshabilitar el botón de oferta
       } else if (newOfferAttempts >= 3) {
         // Si el cliente aún quería negociar (final: false) pero se agotaron los intentos
+        // Creamos una respuesta final forzada en el frontend
         setClientResponse({
             accepted: false,
             response: "Lo siento, pero no me gusta tu oferta. Adiós.", // Mensaje de fin de intentos
-            difference: response.data.difference, // Mantener la última diferencia calculada
+            difference: safeBackendResponse.difference, // Usar la diferencia segura del backend
             negotiating: false,
             final: true // Marcar como final
         });
@@ -109,15 +117,23 @@ const ClientNegotiation = () => {
         setOfferSent(true); // Deshabilitar el botón de oferta
       } else {
          // Si no es final y aún quedan intentos, mostrar la respuesta del backend y permitir seguir
-         setClientResponse(response.data); // Usar la respuesta de negociación del backend
+         setClientResponse(safeBackendResponse); // Usar la respuesta de negociación segura
          setIsFinalResponse(false);
          setOfferSent(false); // Permitir seguir ofreciendo
       }
 
     } catch (error) {
       console.error('Error al evaluar oferta:', error);
+      // En caso de error, establecer una respuesta de error final con difference inicializado
+      setClientResponse({
+        accepted: false,
+        response: error.response?.data?.message || 'Error al evaluar la oferta',
+        difference: 0, // Asegurar difference a 0 en caso de error
+        negotiating: false,
+        final: true
+      });
       setError(error.response?.data?.message || 'Error al evaluar la oferta');
-      setIsFinalResponse(true); // En caso de error, tratar como respuesta final
+      setIsFinalResponse(true); // Forzar fin de negociación en caso de error
       setOfferSent(true); // Deshabilitar oferta en caso de error
     }
   };
@@ -185,8 +201,8 @@ const ClientNegotiation = () => {
             {clientResponse && (
               <div className="client-response">
                 <p>Respuesta del cliente: {clientResponse.response}</p>
-                {/* Mostrar diferencia solo si no es un rechazo inmediato o final no aceptado */}
-                {!clientResponse.final || clientResponse.accepted ? (
+                {/* Mostrar diferencia solo si no es un rechazo inmediato o final no aceptado Y si 'difference' existe */}
+                {(clientResponse.difference !== undefined && clientResponse.difference !== null) && (!clientResponse.final || clientResponse.accepted) ? (
                    <p>Diferencia con precio solicitado: {clientResponse.difference.toFixed(2)}%</p>
                 ) : null}
               </div>

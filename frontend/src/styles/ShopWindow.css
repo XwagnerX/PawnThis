@@ -310,26 +310,28 @@
 }
 
 .history-button {
-  background-color: #4a4a4a;
-  color: #ffd700;
-  border: 2px solid #ffd700;
+  background-color: rgba(65, 32, 8, 1);
+  color: #FEFFD4;
+  border: 2px solid #FEFFD4;
+  padding: 0.6rem 1rem;
   border-radius: 5px;
-  padding: 8px 15px;
-  margin: 0 10px;
+  font-size: clamp(0.8rem, 1.5vw, 1rem);
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
-  transition: all 0.3s ease;
+  gap: 0.5rem;
+  transition: all 0.3s;
+  white-space: nowrap;
 }
 
 .history-button:hover {
-  background-color: #ffd700;
-  color: #2a2a2a;
+  background-color: #FEFFD4;
+  color: #3F1518;
+  border: 2px solid rgba(65, 32, 8, 1);
 }
 
 .history-button i {
-  font-size: 1.1em;
+  font-size: 1.2rem;
 }
 
 .history-button span {
