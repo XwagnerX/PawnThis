@@ -307,4 +307,31 @@
   color: #FEFFD4;
   font-size: 1.1rem;
   font-weight: bold;
+}
+
+.history-button {
+  background-color: #4a4a4a;
+  color: #ffd700;
+  border: 2px solid #ffd700;
+  border-radius: 5px;
+  padding: 8px 15px;
+  margin: 0 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.history-button:hover {
+  background-color: #ffd700;
+  color: #2a2a2a;
+}
+
+.history-button i {
+  font-size: 1.1em;
+}
+
+.history-button span {
+  font-weight: 500;
 } 

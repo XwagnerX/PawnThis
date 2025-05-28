@@ -42,24 +42,25 @@ const Upgrades = () => {
       const token = localStorage.getItem('token');
       const gameId = localStorage.getItem('gameId');
 
+      // Mantener las mejoras existentes y añadir/actualizar la nueva
       const currentUpgrades = Array.isArray(gameState.upgrades) ? [...gameState.upgrades] : [];
       const upgradeIndex = currentUpgrades.findIndex(u => u.type === upgradeId);
-      
+
       if (upgradeIndex >= 0) {
         currentUpgrades[upgradeIndex] = { type: upgradeId, level };
       } else {
         currentUpgrades.push({ type: upgradeId, level });
       }
 
+      // Crear el objeto de actualización con el dinero actualizado y la lista de mejoras
       const updatedGame = {
         money: gameState.money - cost,
-        upgrades: currentUpgrades
       };
 
       if (upgradeId === 'inventory') {
         const baseInventorySpace = 3;
         let bonusSpace = 0;
-        
+
         switch(level) {
           case 1:
             bonusSpace = 5;
@@ -73,7 +74,7 @@ const Upgrades = () => {
           default:
             bonusSpace = 0;
         }
-        
+
         updatedGame.inventorySpace = baseInventorySpace + bonusSpace;
         updatedGame.inventoryUpgrades = level;
       } else if (upgradeId === 'fast_sale') {
@@ -91,9 +92,33 @@ const Upgrades = () => {
           default:
             timeReduction = 0;
         }
-        
+
         updatedGame.saleTimeReduction = timeReduction;
         updatedGame.fastSaleUpgrades = level;
+      } else if (upgradeId === 'fame') {
+        let saleBonus = 0;
+        switch(level) {
+          case 1:
+            saleBonus = 5;
+            break;
+          case 2:
+            saleBonus = 10;
+            break;
+          case 3:
+            saleBonus = 15;
+            break;
+          default:
+            saleBonus = 0;
+        }
+
+        console.log('Actualizando mejora de fama:', {
+          level,
+          saleBonus,
+          currentUpgrades: currentUpgrades // Usar la lista de mejoras ya actualizada aquí
+        });
+
+        updatedGame.saleBonus = saleBonus;
+        updatedGame.fameUpgrades = level;
       }
 
       console.log('Enviando actualización:', updatedGame);
@@ -101,7 +126,6 @@ const Upgrades = () => {
       const response = await axios.put(`/api/game/${gameId}`, updatedGame, {
         headers: { Authorization: `Bearer ${token}` }
       });
-
       setGameState(response.data);
       setError('');
     } catch (err) {

@@ -2,6 +2,7 @@ import Item from '../models/item.model.js';
 import { getSteamItemPrice, getRandomizedPrice, getRandomPawnShopItem, getSteamItemImageUrl } from '../services/steamMarket.service.js';
 import { getCurrentSpaceLimits } from '../services/upgrade.service.js';
 import { calculateSaleTime } from '../services/sale.service.js';
+import SaleHistory from '../models/saleHistory.model.js';
 
 // Obtener todos los items
 export const getItems = async (req, res) => {
@@ -257,13 +258,86 @@ export const completeSale = async (req, res) => {
       });
     }
 
+    // Calcular el precio final con el bonus de fama
+    let finalPrice = item.salePrice;
+    console.log('Estado del juego:', {
+      gameId: gameState._id,
+      saleBonus: gameState.saleBonus,
+      fameUpgrades: gameState.fameUpgrades,
+      upgrades: gameState.upgrades
+    });
+    
+    const bonusApplied = gameState.saleBonus ? `${gameState.saleBonus}%` : '0%';
+    if (gameState.saleBonus) {
+      const bonusMultiplier = 1 + (gameState.saleBonus / 100);
+      finalPrice = Math.round(item.salePrice * bonusMultiplier);
+      console.log('Cálculo del bonus:', {
+        originalPrice: item.salePrice,
+        bonusPercentage: gameState.saleBonus,
+        bonusMultiplier,
+        finalPrice
+      });
+    }
+
+    // Guardar en el historial de ventas
+    const saleHistory = new SaleHistory({
+      gameId: item.gameId,
+      userId: userId,
+      itemName: item.name,
+      originalPrice: item.salePrice,
+      finalPrice: finalPrice,
+      bonusApplied: bonusApplied
+    });
+    await saleHistory.save();
+
     // Sumar el dinero al jugador
-    gameState.money += item.salePrice;
+    gameState.money += finalPrice;
     await gameState.save();
 
     // Eliminar el item
     await item.deleteOne();
-    res.json({ message: 'Item vendido exitosamente', money: gameState.money });
+    res.json({ 
+      message: 'Item vendido exitosamente', 
+      money: gameState.money,
+      originalPrice: item.salePrice,
+      bonusApplied: bonusApplied,
+      finalPrice: finalPrice
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Obtener historial de ventas
+export const getSalesHistory = async (req, res) => {
+  try {
+    const { gameId } = req.params;
+    const userId = req.user.id;
+
+    // Verificar que el juego pertenece al usuario
+    const GameState = (await import('../models/gameStateModel.js')).default;
+    const gameState = await GameState.findOne({ _id: gameId, userId });
+    if (!gameState) {
+      return res.status(404).json({ message: 'Juego no encontrado' });
+    }
+
+    // Obtener el historial de ventas
+    const sales = await SaleHistory.find({ gameId })
+      .sort({ date: -1 })
+      .limit(50);
+
+    // Calcular el total ganado por bonus de fama
+    const totalBonus = sales.reduce((total, sale) => {
+      if (sale.bonusApplied !== '0%') {
+        return total + (sale.finalPrice - sale.originalPrice);
+      }
+      return total;
+    }, 0);
+
+    res.json({
+      sales,
+      totalBonus
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

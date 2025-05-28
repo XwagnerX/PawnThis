@@ -43,6 +43,14 @@ const gameStateSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  saleBonus: {
+    type: Number,
+    default: 0
+  },
+  fameUpgrades: {
+    type: Number,
+    default: 0
+  },
   lastPlayed: {
     type: Date,
     default: Date.now
