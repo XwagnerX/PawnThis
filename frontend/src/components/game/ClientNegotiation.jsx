@@ -78,31 +78,54 @@ const ClientNegotiation = () => {
 
   const handleOffer = async () => {
     if (!client) return;
-    if (offerAttempts >= 2) return;
+    // Permitir hasta 3 intentos de oferta en total (0, 1, 2)
+    if (offerAttempts >= 3) return; 
+
     try {
       const response = await axios.post('/api/clients/evaluate-offer', {
         requestedPrice: client.item.requestedPrice,
         offeredPrice: price,
         personality: client.personality
       });
-      setClientResponse(response.data);
-      setOfferSent(true);
-      setOfferAttempts(attempts => attempts + 1);
-      setIsFinalResponse(true);
+      
+      const newOfferAttempts = offerAttempts + 1; // Calcular el nuevo número de intentos
+      setOfferAttempts(newOfferAttempts); // Actualizar el estado de intentos
+
+      // La respuesta del backend incluye 'negotiating' y 'final'
+      if (response.data.final) {
+        setClientResponse(response.data); // Usar la respuesta final del backend
+        setIsFinalResponse(true);
+        setOfferSent(true); // Deshabilitar el botón de oferta
+      } else if (newOfferAttempts >= 3) {
+        // Si el cliente aún quería negociar (final: false) pero se agotaron los intentos
+        setClientResponse({
+            accepted: false,
+            response: "Lo siento, pero no me gusta tu oferta. Adiós.", // Mensaje de fin de intentos
+            difference: response.data.difference, // Mantener la última diferencia calculada
+            negotiating: false,
+            final: true // Marcar como final
+        });
+        setIsFinalResponse(true); // Forzar fin de negociación
+        setOfferSent(true); // Deshabilitar el botón de oferta
+      } else {
+         // Si no es final y aún quedan intentos, mostrar la respuesta del backend y permitir seguir
+         setClientResponse(response.data); // Usar la respuesta de negociación del backend
+         setIsFinalResponse(false);
+         setOfferSent(false); // Permitir seguir ofreciendo
+      }
+
     } catch (error) {
       console.error('Error al evaluar oferta:', error);
-      setError('Error al evaluar la oferta');
+      setError(error.response?.data?.message || 'Error al evaluar la oferta');
+      setIsFinalResponse(true); // En caso de error, tratar como respuesta final
+      setOfferSent(true); // Deshabilitar oferta en caso de error
     }
   };
 
   const handleDeal = async () => {
-    if (!gameId || !client || !clientResponse) {
-      setError('No se puede completar el trato');
-      return;
-    }
-
-    if (!clientResponse.accepted) {
-      setError('El cliente no ha aceptado la oferta');
+    // Solo permitir el trato si la última respuesta del cliente fue aceptada y es final
+    if (!gameId || !client || !clientResponse || !clientResponse.accepted || !clientResponse.final) {
+      setError('No se puede completar el trato en este momento.');
       return;
     }
 
@@ -161,8 +184,11 @@ const ClientNegotiation = () => {
             {gameState && <p>Tu dinero: ${gameState.money}</p>}
             {clientResponse && (
               <div className="client-response">
-                <p>{clientResponse.response}</p>
-                <p>Diferencia: {clientResponse.difference.toFixed(2)}%</p>
+                <p>Respuesta del cliente: {clientResponse.response}</p>
+                {/* Mostrar diferencia solo si no es un rechazo inmediato o final no aceptado */}
+                {!clientResponse.final || clientResponse.accepted ? (
+                   <p>Diferencia con precio solicitado: {clientResponse.difference.toFixed(2)}%</p>
+                ) : null}
               </div>
             )}
           </div>
@@ -170,6 +196,7 @@ const ClientNegotiation = () => {
 
         {error && <div className="error-message">{error}</div>}
 
+        {/* Mostrar controles de negociación solo si no es una respuesta final */}
         {!isFinalResponse && (
           <div className="negotiation-controls">
             <div className="price-chips-row">
@@ -197,9 +224,9 @@ const ClientNegotiation = () => {
             <button 
               className="offer-button"
               onClick={handleOffer}
-              disabled={offerSent && (clientResponse?.accepted || offerAttempts >= 2)}
+              disabled={offerAttempts >= 3} // Deshabilitar después de 3 intentos
             >
-              {offerSent ? 'Oferta Establecida!' : 'Establecer Oferta'}
+              {offerAttempts === 0 ? 'Establecer Oferta' : offerAttempts < 3 ? 'Hacer Otra Oferta' : 'Sin más intentos'}
             </button>
           </div>
         )}
@@ -214,12 +241,12 @@ const ClientNegotiation = () => {
           <button 
             className="action-button accept"
             onClick={handleDeal}
-            disabled={!offerSent || !clientResponse?.accepted || (gameState && gameState.money < price)}
+            disabled={!clientResponse?.accepted || !clientResponse?.final || (gameState && gameState.money < price)} // Solo permitir Trato Hecho si la respuesta es aceptada y final, y tienes dinero
           >
-            {!offerSent ? 'Esperando Oferta' : 
-              !clientResponse?.accepted ? (offerAttempts >= 2 ? 'Sin más intentos' : 'Oferta Rechazada') :
-              gameState && gameState.money < price ? 'Sin Dinero Suficiente' :
-              'Trato Hecho'}
+            {!clientResponse ? 'Establece una Oferta' : 
+             clientResponse.final ? (clientResponse.accepted ? 
+               (gameState && gameState.money < price ? 'Sin Dinero Suficiente' : 'Trato Hecho') : 'Oferta Rechazada Final') :
+               'Negociando...'}
           </button>
         </div>
       </div>

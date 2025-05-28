@@ -42,7 +42,6 @@ const Upgrades = () => {
       const token = localStorage.getItem('token');
       const gameId = localStorage.getItem('gameId');
 
-      // Mantener las mejoras existentes y añadir/actualizar la nueva
       const currentUpgrades = Array.isArray(gameState.upgrades) ? [...gameState.upgrades] : [];
       const upgradeIndex = currentUpgrades.findIndex(u => u.type === upgradeId);
       
@@ -52,13 +51,11 @@ const Upgrades = () => {
         currentUpgrades.push({ type: upgradeId, level });
       }
 
-      // Crear el objeto de actualización
       const updatedGame = {
         money: gameState.money - cost,
         upgrades: currentUpgrades
       };
 
-      // Manejar mejoras específicas
       if (upgradeId === 'inventory') {
         const baseInventorySpace = 3;
         let bonusSpace = 0;
@@ -80,7 +77,6 @@ const Upgrades = () => {
         updatedGame.inventorySpace = baseInventorySpace + bonusSpace;
         updatedGame.inventoryUpgrades = level;
       } else if (upgradeId === 'fast_sale') {
-        // Actualizar la reducción de tiempo de venta
         let timeReduction = 0;
         switch(level) {
           case 1:
@@ -102,12 +98,10 @@ const Upgrades = () => {
 
       console.log('Enviando actualización:', updatedGame);
 
-      // Enviar la actualización al servidor
       const response = await axios.put(`/api/game/${gameId}`, updatedGame, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      // Actualizar el estado local con la respuesta del servidor
       setGameState(response.data);
       setError('');
     } catch (err) {
@@ -119,13 +113,11 @@ const Upgrades = () => {
   const isUpgradeAvailable = (upgradeId, level) => {
     if (!gameState) return false;
     
-    // Buscar la mejora actual en el array de upgrades
     const currentUpgrade = Array.isArray(gameState.upgrades) 
       ? gameState.upgrades.find(upgrade => upgrade.type === upgradeId)
       : null;
     const currentLevel = currentUpgrade ? currentUpgrade.level : 0;
     
-    // Verificar si el jugador tiene suficiente dinero para la mejora
     const upgradeCost = upgrades.shop.find(u => u.id === upgradeId)?.levels[level-1]?.cost || 0;
     
     return level === currentLevel + 1 && gameState.money >= upgradeCost;

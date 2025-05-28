@@ -16,18 +16,15 @@ const ShopWindow = () => {
   const [limits, setLimits] = useState({ shop: { current: 0, max: 0 } });
   const [gameState, setGameState] = useState(null);
 
-  // Obtener gameId del localStorage
   const gameId = localStorage.getItem('gameId');
 
   useEffect(() => {
     fetchItems();
-    // eslint-disable-next-line
   }, []);
 
-  // Refresca los temporizadores cada segundo
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimers(timers => ({ ...timers })); // Forzar re-render
+      setTimers(timers => ({ ...timers }));
     }, 1000);
     return () => clearInterval(interval);
   }, []);

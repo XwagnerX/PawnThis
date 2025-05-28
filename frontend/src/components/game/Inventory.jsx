@@ -13,7 +13,6 @@ const Inventory = () => {
   const [error, setError] = useState('');
   const [gameState, setGameState] = useState(null);
 
-  // Obtener gameId de la URL o del localStorage
   const gameId = params.gameId || localStorage.getItem('gameId');
   console.log('gameId usado en Inventory:', gameId);
 
@@ -27,13 +26,11 @@ const Inventory = () => {
           return;
         }
         
-        // Obtener items
         const itemsResponse = await axios.get(`/api/items/game/${gameId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setItems(itemsResponse.data.filter(item => !item.forSale));
 
-        // Obtener estado del juego
         const gameResponse = await axios.get(`/api/game/${gameId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -46,16 +43,13 @@ const Inventory = () => {
     };
     fetchData();
 
-    // Añadir un intervalo para actualizar el inventario cada segundo
     const interval = setInterval(fetchData, 1000);
     return () => clearInterval(interval);
   }, [gameId]);
 
-  // Calcular el espacio total del inventario
   const totalInventorySpace = gameState?.inventorySpace || 3;
   const currentItems = items?.length || 0;
 
-  // Rellenar los slots vacíos hasta el límite actual
   const filledSlots = [...(items || [])];
   while (filledSlots.length < totalInventorySpace) {
     filledSlots.push(null);
@@ -116,7 +110,6 @@ const Inventory = () => {
       const newValue = calculateNewValue(item);
       const nextCondition = getNextCondition(item.condition);
 
-      // Actualizar el item
       await axios.put(`/api/items/${item._id}`, {
         condition: nextCondition,
         requestedPrice: newValue
@@ -124,7 +117,6 @@ const Inventory = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      // Actualizar el dinero del jugador
       const updatedGameState = {
         ...gameState,
         money: gameState.money - repairCost
@@ -133,7 +125,6 @@ const Inventory = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      // Actualizar el estado local
       setGameState(updatedGameState);
       const updatedItems = items.map(i => 
         i._id === item._id 
