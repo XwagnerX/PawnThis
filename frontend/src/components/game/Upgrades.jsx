@@ -14,11 +14,9 @@ const Upgrades = () => {
       try {
         const token = localStorage.getItem('token');
         const gameId = localStorage.getItem('gameId');
-        
         const response = await axios.get(`/api/game/${gameId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        
         setGameState(response.data);
         setLoading(false);
       } catch (err) {
@@ -26,13 +24,11 @@ const Upgrades = () => {
         setLoading(false);
       }
     };
-
     fetchGameState();
   }, []);
 
   const handleUpgrade = async (upgradeId, level, cost) => {
     if (!gameState) return;
-
     if (gameState.money < cost) {
       setError('No tienes suficiente dinero para esta mejora');
       return;
@@ -42,90 +38,66 @@ const Upgrades = () => {
       const token = localStorage.getItem('token');
       const gameId = localStorage.getItem('gameId');
 
-      // Mantener las mejoras existentes y añadir/actualizar la nueva
-      const currentUpgrades = Array.isArray(gameState.upgrades) ? [...gameState.upgrades] : [];
-      const upgradeIndex = currentUpgrades.findIndex(u => u.type === upgradeId);
-
-      if (upgradeIndex >= 0) {
-        currentUpgrades[upgradeIndex] = { type: upgradeId, level };
-      } else {
-        currentUpgrades.push({ type: upgradeId, level });
-      }
-
-      // Crear el objeto de actualización con el dinero actualizado y la lista de mejoras
       const updatedGame = {
-        money: gameState.money - cost,
+        money: gameState.money - cost
       };
 
       if (upgradeId === 'inventory') {
         const baseInventorySpace = 3;
         let bonusSpace = 0;
-
-        switch(level) {
-          case 1:
-            bonusSpace = 5;
-            break;
-          case 2:
-            bonusSpace = 10;
-            break;
-          case 3:
-            bonusSpace = 15;
-            break;
-          default:
-            bonusSpace = 0;
+        switch (level) {
+          case 1: bonusSpace = 5; break;
+          case 2: bonusSpace = 10; break;
+          case 3: bonusSpace = 15; break;
+          default: bonusSpace = 0;
         }
-
         updatedGame.inventorySpace = baseInventorySpace + bonusSpace;
         updatedGame.inventoryUpgrades = level;
+
       } else if (upgradeId === 'fast_sale') {
         let timeReduction = 0;
-        switch(level) {
-          case 1:
-            timeReduction = 5;
-            break;
-          case 2:
-            timeReduction = 10;
-            break;
-          case 3:
-            timeReduction = 15;
-            break;
-          default:
-            timeReduction = 0;
+        switch (level) {
+          case 1: timeReduction = 5; break;
+          case 2: timeReduction = 10; break;
+          case 3: timeReduction = 15; break;
+          default: timeReduction = 0;
         }
-
         updatedGame.saleTimeReduction = timeReduction;
         updatedGame.fastSaleUpgrades = level;
+
       } else if (upgradeId === 'fame') {
         let saleBonus = 0;
-        switch(level) {
-          case 1:
-            saleBonus = 5;
-            break;
-          case 2:
-            saleBonus = 10;
-            break;
-          case 3:
-            saleBonus = 15;
-            break;
-          default:
-            saleBonus = 0;
+        switch (level) {
+          case 1: saleBonus = 5; break;
+          case 2: saleBonus = 10; break;
+          case 3: saleBonus = 15; break;
+          default: saleBonus = 0;
         }
-
         console.log('Actualizando mejora de fama:', {
           level,
           saleBonus,
-          currentUpgrades: currentUpgrades // Usar la lista de mejoras ya actualizada aquí
+          currentUpgrades: gameState.upgrades
         });
-
         updatedGame.saleBonus = saleBonus;
         updatedGame.fameUpgrades = level;
       }
+
+      const currentUpgrades = Array.isArray(gameState.upgrades) ? [...gameState.upgrades] : [];
+      const upgradeIndex = currentUpgrades.findIndex(u => u.type === upgradeId);
+      if (upgradeIndex >= 0) {
+        currentUpgrades[upgradeIndex] = { type: upgradeId, level };
+      } else {
+        currentUpgrades.push({ type: upgradeId, level });
+      }
+      updatedGame.upgrades = currentUpgrades;
 
       console.log('Enviando actualización:', updatedGame);
 
       const response = await axios.put(`/api/game/${gameId}`, updatedGame, {
         headers: { Authorization: `Bearer ${token}` }
       });
+
+      console.log('Respuesta del servidor:', response.data);
       setGameState(response.data);
       setError('');
     } catch (err) {
@@ -136,14 +108,13 @@ const Upgrades = () => {
 
   const isUpgradeAvailable = (upgradeId, level) => {
     if (!gameState) return false;
-    
-    const currentUpgrade = Array.isArray(gameState.upgrades) 
+
+    const currentUpgrade = Array.isArray(gameState.upgrades)
       ? gameState.upgrades.find(upgrade => upgrade.type === upgradeId)
       : null;
     const currentLevel = currentUpgrade ? currentUpgrade.level : 0;
-    
-    const upgradeCost = upgrades.shop.find(u => u.id === upgradeId)?.levels[level-1]?.cost || 0;
-    
+
+    const upgradeCost = upgrades.shop.find(u => u.id === upgradeId)?.levels[level - 1]?.cost || 0;
     return level === currentLevel + 1 && gameState.money >= upgradeCost;
   };
 
@@ -180,16 +151,18 @@ const Upgrades = () => {
           { level: 2, cost: 2500, effect: '+10% de ganancia en cada venta' },
           { level: 3, cost: 5000, effect: '+15% de ganancia en cada venta' }
         ]
-      },
+      }
     ]
   };
 
   if (loading) {
-    return <div className="upgrades-scene">
-      <div className="upgrades-content">
-        <p>Cargando mejoras...</p>
+    return (
+      <div className="upgrades-scene">
+        <div className="upgrades-content">
+          <p>Cargando mejoras...</p>
+        </div>
       </div>
-    </div>;
+    );
   }
 
   return (
@@ -207,9 +180,7 @@ const Upgrades = () => {
             <span>Volver</span>
           </button>
         </div>
-
         {error && <div className="error-message">{error}</div>}
-
         <div className="upgrades-sections">
           <section className="upgrade-section">
             <h3>Mejoras de Tienda</h3>
@@ -223,10 +194,9 @@ const Upgrades = () => {
                       const isAvailable = isUpgradeAvailable(upgrade.id, level.level);
                       const currentLevel = gameState?.upgrades?.[upgrade.id] || 0;
                       const isOwned = currentLevel >= level.level;
-
                       return (
-                        <button 
-                          key={level.level} 
+                        <button
+                          key={level.level}
                           className={`upgrade-button ${isOwned ? 'owned' : ''} ${isAvailable ? 'available' : ''}`}
                           onClick={() => isAvailable && handleUpgrade(upgrade.id, level.level, level.cost)}
                           disabled={!isAvailable || isOwned}
@@ -243,7 +213,6 @@ const Upgrades = () => {
               ))}
             </div>
           </section>
-
           <section className="upgrade-section">
             <h3>Mejoras Personales</h3>
             <div className="upgrades-grid">
@@ -256,10 +225,9 @@ const Upgrades = () => {
                       const isAvailable = isUpgradeAvailable(upgrade.id, level.level);
                       const currentLevel = gameState?.upgrades?.[upgrade.id] || 0;
                       const isOwned = currentLevel >= level.level;
-
                       return (
-                        <button 
-                          key={level.level} 
+                        <button
+                          key={level.level}
                           className={`upgrade-button ${isOwned ? 'owned' : ''} ${isAvailable ? 'available' : ''}`}
                           onClick={() => isAvailable && handleUpgrade(upgrade.id, level.level, level.cost)}
                           disabled={!isAvailable || isOwned}
@@ -282,4 +250,4 @@ const Upgrades = () => {
   );
 };
 
-export default Upgrades; 
+export default Upgrades;
